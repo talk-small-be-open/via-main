@@ -1,3 +1,0 @@
-rendering
-renderBottomOn: html
-	"subclasses"

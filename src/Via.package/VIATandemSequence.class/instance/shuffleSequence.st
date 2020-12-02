@@ -1,3 +1,0 @@
-accessing
-shuffleSequence
-	^ shuffleSequence = true

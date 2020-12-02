@@ -1,3 +1,0 @@
-accessing
-beTermsAccepted
-	termsAccepted := true

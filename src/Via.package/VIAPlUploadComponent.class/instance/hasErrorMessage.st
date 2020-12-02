@@ -1,3 +1,0 @@
-testing
-hasErrorMessage
-	^errorMessage notNil

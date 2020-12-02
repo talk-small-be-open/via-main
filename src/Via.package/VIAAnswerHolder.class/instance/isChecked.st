@@ -1,3 +1,0 @@
-testing
-isChecked
-	^correction ~= #notCheckedYet

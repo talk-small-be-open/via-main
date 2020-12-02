@@ -1,1 +1,0 @@
-I display an information and the user can press OK to continue. I am simple. I am used in workflows, typically.

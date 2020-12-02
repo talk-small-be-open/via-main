@@ -1,3 +1,0 @@
-testing
-hasRatings
-	^ratings notEmpty

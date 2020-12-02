@@ -1,3 +1,0 @@
-site-config
-frontendSessionClass
-	^ VIADefaultSession

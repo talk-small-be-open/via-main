@@ -1,3 +1,0 @@
-testing
-isAutologin
-	^isAutologin = true

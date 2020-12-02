@@ -1,3 +1,0 @@
-accessing
-longitudeString
-	^ longitude asString

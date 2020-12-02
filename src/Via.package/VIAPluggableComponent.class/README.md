@@ -1,1 +1,0 @@
-I am a reusable flexible component, which displays simple content.

@@ -1,3 +1,0 @@
-actions
-exit
-	self answer

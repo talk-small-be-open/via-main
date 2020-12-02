@@ -1,3 +1,0 @@
-correction
-isHideWrongAnswers
-	^self isShowCorrection

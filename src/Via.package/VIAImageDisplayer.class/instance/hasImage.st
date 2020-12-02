@@ -1,3 +1,0 @@
-testing
-hasImage
-	^imageAsset notNil

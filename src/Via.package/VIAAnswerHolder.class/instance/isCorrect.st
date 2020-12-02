@@ -1,3 +1,0 @@
-testing
-isCorrect
-	^correction = #correct

@@ -1,3 +1,0 @@
-testing
-isFullscreenSupported
-	^ isFullscreenSupported = true

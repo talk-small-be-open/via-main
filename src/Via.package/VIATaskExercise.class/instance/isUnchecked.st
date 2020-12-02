@@ -1,3 +1,0 @@
-testing
-isUnchecked
-	^self isFirstTake

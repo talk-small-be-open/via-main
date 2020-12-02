@@ -1,3 +1,0 @@
-testing
-isIgnored
-	^isIgnored = true

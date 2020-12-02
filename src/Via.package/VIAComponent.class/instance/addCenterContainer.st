@@ -1,3 +1,0 @@
-as yet unclassified
-addCenterContainer
-	self addDecoration: VIACenterContainerDecoration new

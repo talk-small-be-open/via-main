@@ -1,3 +1,0 @@
-helpers
-headerOffset
-	^ 0

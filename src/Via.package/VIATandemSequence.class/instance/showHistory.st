@@ -1,3 +1,0 @@
-accessing
-showHistory
-	^ showHistory = true

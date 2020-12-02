@@ -1,3 +1,0 @@
-testing
-isParseOk
-	^parseOk = true

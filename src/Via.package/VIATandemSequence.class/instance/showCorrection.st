@@ -1,3 +1,0 @@
-accessing
-showCorrection
-	^ showCorrection = true

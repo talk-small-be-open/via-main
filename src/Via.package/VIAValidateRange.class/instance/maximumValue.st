@@ -1,3 +1,0 @@
-accessing
-maximumValue
-	^ maximum value

@@ -1,3 +1,0 @@
-accessing
-isInvitee
-	^ isInvitee = true

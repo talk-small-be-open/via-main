@@ -1,3 +1,0 @@
-testing
-isConfirmed
-	^password = passwordConfirmation

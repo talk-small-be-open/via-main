@@ -1,3 +1,0 @@
-accessing
-deleteExercisesInProgress
-	moduleExercisesInProgress removeAll

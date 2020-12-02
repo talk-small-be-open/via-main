@@ -1,3 +1,0 @@
-*Via
-visitViaPrNoteAnnotation: aViaPrNoteAnnotation
-	self visitAnnotation: aViaPrNoteAnnotation

@@ -1,3 +1,0 @@
-testing
-isClassificationFiltered
-	^moduleClassification isEmpty not

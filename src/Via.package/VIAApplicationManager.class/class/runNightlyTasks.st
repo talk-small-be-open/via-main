@@ -1,3 +1,0 @@
-tasks
-runNightlyTasks
-	self exportModulesAsPdf

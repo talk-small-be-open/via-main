@@ -1,3 +1,0 @@
-testing
-hasVersions
-	^moduleHistory hasMultipleVersions

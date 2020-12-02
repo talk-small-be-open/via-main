@@ -1,3 +1,0 @@
-testing
-hasUploadedFile
-	^tempFileReference isFileExisting

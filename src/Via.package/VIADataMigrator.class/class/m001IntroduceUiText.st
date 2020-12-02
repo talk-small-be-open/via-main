@@ -1,3 +1,0 @@
-as yet unclassified
-m001IntroduceUiText
-	VIADatabase current initializeDefaultValues

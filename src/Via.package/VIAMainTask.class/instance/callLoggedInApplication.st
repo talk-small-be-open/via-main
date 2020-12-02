@@ -1,3 +1,0 @@
-as yet unclassified
-callLoggedInApplication
-	self subclassResponsibility

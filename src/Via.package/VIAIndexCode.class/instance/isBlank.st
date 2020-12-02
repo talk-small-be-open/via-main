@@ -1,3 +1,0 @@
-testing
-isBlank
-	^ self isEmpty

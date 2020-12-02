@@ -1,3 +1,0 @@
-testing
-hasFootnotes
-	^footnotesPillar notNil

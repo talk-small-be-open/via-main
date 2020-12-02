@@ -1,3 +1,0 @@
-tests
-testCaptcha
-	self requestCaptcha

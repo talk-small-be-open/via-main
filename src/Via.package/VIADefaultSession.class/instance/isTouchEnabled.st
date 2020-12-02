@@ -1,3 +1,0 @@
-testing
-isTouchEnabled
-	^ touchEnabled = true

@@ -1,3 +1,0 @@
-accessing
-latitudeString
-	^ latitude asString

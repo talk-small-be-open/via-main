@@ -1,3 +1,0 @@
-testing
-isCollapsed
-	^ collapsed = true

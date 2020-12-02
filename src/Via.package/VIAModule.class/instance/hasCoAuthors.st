@@ -1,3 +1,0 @@
-testing
-hasCoAuthors
-	^coAuthorUsers notBlank

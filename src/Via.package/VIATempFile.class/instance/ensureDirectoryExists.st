@@ -1,3 +1,0 @@
-as yet unclassified
-ensureDirectoryExists
-	GRPlatform current ensureExistenceOfFolder: self directory

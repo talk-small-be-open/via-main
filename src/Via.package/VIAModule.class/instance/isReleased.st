@@ -1,3 +1,0 @@
-testing
-isReleased
-	^ isDraft not

@@ -1,3 +1,0 @@
-switch user
-backgroundAdminUser
-	^backgroundAdminUser

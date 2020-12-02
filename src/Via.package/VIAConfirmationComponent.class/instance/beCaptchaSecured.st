@@ -1,3 +1,0 @@
-accessing
-beCaptchaSecured
-	isCaptchaSecured := true

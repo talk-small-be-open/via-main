@@ -1,3 +1,0 @@
-accessing
-noSound
-	^ noSound = true

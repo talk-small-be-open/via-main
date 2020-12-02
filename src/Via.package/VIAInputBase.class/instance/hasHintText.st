@@ -1,3 +1,0 @@
-testing
-hasHintText
-	^hintText notBlank

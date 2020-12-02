@@ -1,3 +1,0 @@
-rendering
-jsStart
-	^nil

@@ -1,3 +1,0 @@
-testing
-isPartiallyCorrect
-	^correction = #partiallyCorrect

@@ -1,3 +1,0 @@
-testing
-isInvalid
-	^isValid = false

@@ -1,3 +1,0 @@
-actions
-start
-	self gotoFirstExerciser

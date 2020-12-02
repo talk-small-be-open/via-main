@@ -1,3 +1,0 @@
-testing
-isLoginRequired
-	^isLoginRequired = true

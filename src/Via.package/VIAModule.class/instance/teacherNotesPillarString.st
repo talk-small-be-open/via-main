@@ -1,3 +1,0 @@
-accessing
-teacherNotesPillarString
-	^VIAHelper pillarStringFromPillar: teacherNotesPillar

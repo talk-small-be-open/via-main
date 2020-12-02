@@ -1,3 +1,0 @@
-testing
-isFragment
-	^startTime notNil

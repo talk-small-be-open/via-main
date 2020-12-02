@@ -1,3 +1,0 @@
-testing
-isCaptchaSecured
-	^isCaptchaSecured

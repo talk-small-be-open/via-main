@@ -1,3 +1,0 @@
-testing
-isAutoShowHint
-	^autoShowHint = true

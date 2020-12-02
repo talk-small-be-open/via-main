@@ -1,3 +1,0 @@
-accessing
-isVisibleAfterSubmit
-	^ visibleAfterSubmit = true

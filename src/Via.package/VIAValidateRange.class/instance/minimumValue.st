@@ -1,3 +1,0 @@
-accessing
-minimumValue
-	^ minimum value

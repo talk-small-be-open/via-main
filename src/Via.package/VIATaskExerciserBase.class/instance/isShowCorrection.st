@@ -1,3 +1,0 @@
-correction
-isShowCorrection
-	^true

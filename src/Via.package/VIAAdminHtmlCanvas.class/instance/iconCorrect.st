@@ -1,3 +1,0 @@
-icons
-iconCorrect
-	^self iconCheck

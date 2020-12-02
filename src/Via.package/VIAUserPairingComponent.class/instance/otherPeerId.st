@@ -1,3 +1,0 @@
-accessing
-otherPeerId
-	self subclassResponsibility

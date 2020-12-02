@@ -1,1 +1,0 @@
-Basis für alle Models

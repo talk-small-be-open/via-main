@@ -1,3 +1,0 @@
-accessing
-isLogoutRequired
-	^isLogoutRequired = true

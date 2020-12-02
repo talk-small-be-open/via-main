@@ -1,3 +1,0 @@
-accessing
-newConfiguration
-	^ PRCocoonConfiguration new

@@ -1,3 +1,0 @@
-actions
-recheck
-	self check

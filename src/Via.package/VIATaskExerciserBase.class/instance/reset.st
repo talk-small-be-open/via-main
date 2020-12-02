@@ -1,3 +1,0 @@
-checking
-reset
-	self subclassResponsibility

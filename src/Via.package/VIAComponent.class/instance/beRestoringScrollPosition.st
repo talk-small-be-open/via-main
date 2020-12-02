@@ -1,3 +1,0 @@
-as yet unclassified
-beRestoringScrollPosition
-	self addDecoration: VIARestoreScrollPositionDecoration new

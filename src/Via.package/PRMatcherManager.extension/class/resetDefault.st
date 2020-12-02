@@ -1,3 +1,0 @@
-*Via
-resetDefault
-	Default := nil

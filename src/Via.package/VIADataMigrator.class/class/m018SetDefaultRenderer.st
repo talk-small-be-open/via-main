@@ -1,3 +1,0 @@
-as yet unclassified
-m018SetDefaultRenderer
-	VIAApplicationManager ensureDefaultRenderer

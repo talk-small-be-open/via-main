@@ -1,3 +1,0 @@
-testing
-hasIndexCode
-	^ indexCode notBlank

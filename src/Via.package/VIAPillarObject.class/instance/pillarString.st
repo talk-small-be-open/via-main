@@ -1,3 +1,0 @@
-accessing
-pillarString
-	^pillarString

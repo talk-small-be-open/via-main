@@ -1,3 +1,0 @@
-testing
-isIgnoreTaskAllowed
-	^ allowIgnoreTasks = true
