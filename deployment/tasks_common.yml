@@ -10,11 +10,13 @@
   #
   # Sysctl settings
   #
-  # - name: Reduce swappiness. Use memory first. Better for MongoDB.
-  #   sysctl:
-  #     name: "vm.swappiness"
-  #     value: "1"
-  #     state: present
+  - name: Use a bit more than 2GB of max shared memory, since the "Limited" GemStone license will give us 2GB
+    when: via.gemStone.keyfile is defined
+    sysctl:
+      name: "kernel.shmmax"
+      # 2.5*1024*1024*1024
+      value: "2684354560"
+      state: present
 
 
   - name: Environment file

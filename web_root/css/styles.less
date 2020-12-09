@@ -242,3 +242,52 @@ div.p2pStatus {
 		}
 		
 }
+
+
+div.VIAUserPairingComponent {
+
+		.pairingCode() {
+				border: 2px solid black;
+				padding: 0.3em;
+				font-size: 180%;
+		}
+
+		div.pairingStatus {
+				margin: 1em 0;
+
+				div.pairingMessage {
+						margin: 1em 0;
+				}
+		}
+		
+		&.VIAUserPairingPassiveComponent {
+				div.yourId {
+						.pairingCode();
+						
+						margin: 1em 0;
+
+						span.theId {
+								font-family: monospace;
+						}
+				}
+		}
+
+		&.VIAUserPairingActiveComponent {
+				div.explanation {
+						margin: 0.5em 0;
+				}
+
+				div.codeInputContainer {
+						input.codeInput {
+								.pairingCode();
+								font-family: monospace;
+								width: 3em;
+								margin-right: 1em;
+						}
+
+						.uk-button {
+								font-size: 150%;
+						}
+				}
+		}
+}
