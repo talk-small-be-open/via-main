@@ -1,0 +1,278 @@
+// Tandem sequence
+
+@tandem-color-player1: lightgreen;
+@tandem-color-player2: yellow;
+
+div.exercise {
+		div.VIATandemSequenceExerciser {
+
+
+				@radius: 0.5em;
+				@nonGameCardColor: #ddd;
+
+				.playerLabel(@circleSize) {
+						span.playerLabel {
+								display: inline-block;
+								font-size: 0.7 * @circleSize;
+								background-color: white;
+								width: @circleSize;
+								height: @circleSize;
+								text-align: center;
+								border-radius: 50%;
+								vertical-align: middle;
+								line-height: @circleSize;
+
+								span.playerChar {
+										
+								}
+						}
+				}
+				
+				.ajaxAction {
+						display: contents;
+						cursor: pointer;
+				}
+				
+				.card {
+						display: block;
+						position: relative;
+						border-radius: @radius;
+						padding: 1em;
+
+						.uk-button {
+								border-color: black;
+								color: inherit;
+								background-color: transparent;
+								font-weight: bold;
+						}
+				}
+				
+
+				div.p2pStatus {
+						margin: 1em 0;
+				}
+
+				
+				a.chooser {
+						.card();
+						text-align: center;
+						
+						.playerLabel(4rem);
+						span.playerLabel {
+								margin: 0.2em 0;
+						}
+
+						span.button {
+								margin-top: 1em;
+								display: inline-block;
+						}
+
+						.icon {
+								font-size: 1.5em;
+						}
+
+						.button {
+								line-height: 2em;
+						}
+						
+				}
+
+				div.pairer {
+						.card();
+				}
+
+				
+				div.questionAndAnswer {
+						@biggerFont: 150%;
+						@padding: 1rem;
+						@iconSize: 3rem;
+
+						.playerLabel(2rem);
+
+						div.question {
+								.card();
+								position: relative;
+								z-index: 10;
+
+								span.playerLabel {
+										position: absolute;
+										right: 0.5em;
+										top: 0.5em;
+								}
+
+
+								div.explanation {
+										margin-top: 1em;
+										margin-bottom: 1em;
+								}
+
+								div.questionIcon {
+										text-align: center;
+										.icon {
+												font-size: @iconSize;
+												margin-right: 0.1em;
+										}
+								}
+						}
+
+						
+						div.answer {
+								.card();
+								position: relative;
+								z-index: 5;
+								top: -1.5 * @radius;
+								margin-bottom: -1.5 * @radius;
+								padding: @padding;
+								padding-top: 2.5 * @radius;
+								margin-top: 0;
+
+								span.playerLabel {
+										position: absolute;
+										right: 0.5em;
+										top: 1.2em;
+								}
+								
+
+								div.answerIcon {
+										text-align: center;
+										cursor: pointer;
+										.icon {
+												font-size: @iconSize;
+										}
+								}
+
+								div.correction {
+										margin: 1em 0;
+										display: flex;
+										justify-content: space-evenly;
+
+										a {
+												color: black;
+										}
+								}
+
+						}
+
+						&.hiddenAnswer {
+								div.question {
+								}
+						}
+
+						&.current {
+								&.hiddenAnswer {
+										div.question {
+												font-size: @biggerFont;
+										}
+								}
+								
+								div.answer {
+										font-size: @biggerFont;
+								}
+						}
+						
+				}
+
+				.player1 {
+						background-color: @tandem-color-player1;
+				}
+
+				.player2 {
+						background-color: @tandem-color-player2;
+				}
+
+				div.step2Instructions {
+						.card();
+						text-align: center;
+						.playerLabel(2rem);
+						span.playerLabel {
+								position: absolute;
+								right: 0.5em;
+								top: 0.5em;
+						}
+
+
+				}
+
+				div.summaryPage {
+						div.summary {
+								.card();
+
+								div.pointsSummary {
+										.uk-margin-top();
+										.uk-margin-bottom();
+										div.points {
+												font-size: 200%;
+												margin: 1em 0;
+										}
+								}
+
+								div.summaryButtons {
+										display: flex;
+										justify-content: space-evenly;
+
+										.uk-button {
+												line-height: 2em;
+												width: 40%;
+
+												span.icon {
+														width: 3em;
+												}
+										}
+								}
+
+						}
+
+						div.history {
+								.uk-margin-top();
+								.uk-margin-bottom();
+
+								div.question {
+										background-color: @nonGameCardColor;
+								}
+								
+								div.answer {
+										background-color: lighten(@nonGameCardColor, 5%);
+										margin-bottom: 1em;
+								}
+						}
+						
+				}
+				
+				div.navigation {
+						position: sticky;
+						bottom: 0;
+						background-color: white;
+						font-size: 200%;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-top: 0.5em;
+
+						a {
+								color: inherit;
+						}
+
+						span.left, span.right {
+								width: 40%;
+						}
+
+						span.left {
+								font-size: 1rem;
+						}
+
+						span.right {
+								text-align: right;
+						}
+
+						div.toolbar {
+								display: inline;
+
+								a {
+										margin-left: 0.5em;
+								}
+						}
+						
+				}
+
+		}
+}
