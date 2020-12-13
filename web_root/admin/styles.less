@@ -643,6 +643,12 @@ div.systemMessage {
 		margin: 1em 0;
 }
 
+div.VIAInformationComponent {
+		div.message {
+				margin: 1em 0;
+		}
+}
+
 // ======================================================
 // Fake styles for mimic some cross-used uikit components
 // ======================================================
@@ -653,6 +659,21 @@ div[uk-modal] {
 		div.uk-modal-dialog {
 			.modalDialog();
 		}
+}
+
+.uk-alert {
+		border: 1px solid black;
+		margin: 1em 0;
+		padding: 1em;
+
+		&.uk-alert-success {
+				background-color: lightgreen;
+		}
+
+		&.uk-alert-danger {
+				background-color: pink;
+		}
+
 }
 
 
