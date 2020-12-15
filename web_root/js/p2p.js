@@ -22,24 +22,24 @@ function p2pInit(elementId, myPeerId, onDataFunction) {
 		var element = document.getElementById(elementId);
 	
 	  peer.on("open", function(id) {
-			console.log("My peer ID is: " + id);
+			console.log("P2P My peer ID is: " + id);
 			resolve(peer);
 			element.classList.add('open');
 		});
 
 	  peer.on("error", function(error) {
-			console.log("Peer error " + error);
+			console.log("P2P Peer error " + error);
 			reject("Could not connect to peer server: "+error);
 			element.classList.add('error');
 		});
 
 		// On incoming connection
 	  peer.on("connection", function(c) {
-			console.log("Incoming connection!");
+			console.log("P2P Incoming connection!");
 			p2pSetConnection(elementId, c.peer, c);
 
 			c.on("error", function(error) {
-				console.log("Connection error ", error);
+				console.log("P2P Connection error ", error);
 				element.classList.add('error');
 			});
 
@@ -58,7 +58,7 @@ function p2pOnData(elementId, data, connection, callback) {
 	element.classList.remove('error');
 	element.classList.add('data');
 
-	console.log("Received", data);
+	console.log("P2P Received", data);
 
 	if (data == 'ping') {
 		connection.send('pong');
@@ -81,14 +81,14 @@ function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null
 	return p2pInit(elementId, myPeerId, onDataFunction).then(peer => {
 
 		if (otherPeerId) {
-			console.log('Trying to contact', otherPeerId);
+			console.log('P2P Trying to contact', otherPeerId);
 			return p2pGetConnection(elementId, otherPeerId).then(conn => {
 				var element = document.getElementById(elementId);
 
 				conn.on("data", function(data){p2pOnData(elementId, data, conn, onDataFunction)});
 
 				conn.on("error", function(error) {
-					console.log("Connection error ", error);
+					console.log("P2P Connection error ", error);
 					element.classList.add('error');
 					// remove cache, so its recreated
 					p2pSetConnection(elementId, otherPeerId, null);
@@ -99,16 +99,17 @@ function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null
 				}
 
 				return conn;
+			// }).catch((error)=>{
+			// 	console.log("P2P error" + error);
+			// 	alert('Error while communicating to paired user: ' + error)
 			})
 		}
 	})
-//	}, error => alert(error) )
 }
-
 		
 // Get a connection object, which we have tracked, or generate a new
 function p2pGetConnection(elementId, otherPeerId) {
-	return new Promise( (resolve, reject) => {
+	var promise = new Promise( (resolve, reject) => {
 		const element = document.getElementById(elementId);
 		const connectionId = 'p2p_' + elementId + '_' + otherPeerId;	
 		var conn = p2pConnections[connectionId];
@@ -128,15 +129,17 @@ function p2pGetConnection(elementId, otherPeerId) {
 
 			openPeer.then(peer => {
 				conn = peer.connect(otherPeerId, {reliable: true});
-				console.log("Outgoing connection created");
+				console.log("P2P Outgoing connection created");
 				conn.on("open", function() {
-					console.log("Outgoing connection opened");
+					console.log("P2P Outgoing connection opened");
 					p2pSetConnection(elementId, otherPeerId, conn);
 					resolve(conn);
 				})
 			});
 		}
-	})
+	});
+
+	return promiseTimeout(10000, promise);
 }
 
 // Save an existing connection
@@ -148,7 +151,10 @@ function p2pSetConnection(elementId, otherPeerId, connection) {
 
 function p2pSend(elementId, otherPeerId, data) {
 	p2pGetConnection(elementId, otherPeerId).then(conn => {
-		console.log("Sending " + data);
+		console.log("P2P sending " + data);
 		conn.send(data);
+	}).catch((error)=>{
+		console.log("P2P error" + error);
+		alert('Error while communicating to paired user: ' + error)
 	})
 }

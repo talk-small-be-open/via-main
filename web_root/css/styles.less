@@ -247,9 +247,8 @@ div.p2pStatus {
 div.VIAUserPairingComponent {
 
 		.pairingCode() {
-				border: 2px solid black;
 				padding: 0.3em;
-				font-size: 180%;
+				font-family: monospace;
 		}
 
 		div.pairingStatus {
@@ -262,12 +261,12 @@ div.VIAUserPairingComponent {
 		
 		&.VIAUserPairingPassiveComponent {
 				div.yourId {
-						.pairingCode();
+						font-size: 180%;
 						
 						margin: 1em 0;
 
 						span.theId {
-								font-family: monospace;
+								.pairingCode()
 						}
 				}
 		}
@@ -280,7 +279,8 @@ div.VIAUserPairingComponent {
 				div.codeInputContainer {
 						input.codeInput {
 								.pairingCode();
-								font-family: monospace;
+								font-size: 180%;
+								border: 2px solid black;
 								width: 3em;
 								margin-right: 1em;
 						}

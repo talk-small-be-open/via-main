@@ -77,7 +77,7 @@ http {
 
 				# If root is accessed, then redirect to app
 				location = / {
-    		 	  return 301 https://$host/app;
+    		 	  return 301 $scheme://$host/app;
 				}
 
         # General rule, serve static file or redirect to app

@@ -26,16 +26,17 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 # information on enabling SSL in the smtp client.
 
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
-#myhostname = {{via.emailDomain}}
-myorigin = {{via.emailDomain}}
+myorigin = $myhostname
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-mydestination = {{via.emailDomain}}, localhost.localdomain, localhost
+mydestination = localhost.localdomain, localhost
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = loopback-only
 inet_protocols = all
+
+
 
 {% if via.smtpRelayhost %}
 relayhost = {{via.smtpRelayhost}}
@@ -44,4 +45,7 @@ relay_transport = error
 {% else %}
 default_transport = smtp
 relay_transport = relay
+# Limit sending power
+default_destination_concurrency_limit = 2
+default_destination_rate_delay = 1s
 {% endif %}
