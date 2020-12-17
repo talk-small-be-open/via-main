@@ -38,8 +38,9 @@ http {
         '' close;
 		}
 
-		# Define request limit, used for demo app
+		# Define request limit, used for demo and app
 		limit_req_zone $binary_remote_addr zone=demo:5m rate=1r/s;
+		limit_req_zone $binary_remote_addr zone=app:10m rate=2r/s;
 		limit_req_status 509; # = "Bandwidth exceeded"
 
     # Via Server
@@ -86,11 +87,7 @@ http {
         # General rule, serve static file or redirect to app
         location / {
 
-            {%- if via.isBeta -%}
-            # BETA TEST
-            auth_basic           "App Beta-Test";
-            auth_basic_user_file htpasswd_betatest;
-            {%- endif -%}
+						{% include 'betatest_auth.j2' %}
             
             try_files $uri @gemstone;
         }
@@ -100,11 +97,10 @@ http {
         # Speedup access to main app (Frontend and Backend)
         location {{path}} {
 
-            {%- if via.isBeta -%}
-            # BETA TEST
-            auth_basic           "App Beta-Test";
-            auth_basic_user_file htpasswd_betatest;
-            {%- endif %}
+						# Limit access speed
+						limit_req zone=app burst=5;
+
+						{% include 'betatest_auth.j2' %}
             
 						{% include 'proxy_to_gems.j2' %}
         }
@@ -117,11 +113,18 @@ http {
 						# Since the demo is public
 						limit_req zone=demo burst=5;
 
-            {%- if via.isBeta -%}
-            # BETA TEST
-            auth_basic           "App Beta-Test";
-            auth_basic_user_file htpasswd_betatest;
-            {%- endif %}
+						{% include 'betatest_auth.j2' %}
+            
+						{% include 'proxy_to_gems.j2' %}
+        }
+
+        # Control access to portal page
+        location /portal {
+
+						# Limit access speed
+						limit_req zone=app burst=5;
+
+						{% include 'betatest_auth.j2' %}
             
 						{% include 'proxy_to_gems.j2' %}
         }

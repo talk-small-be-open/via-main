@@ -44,3 +44,7 @@ check process via_peerjs_server matching "^node .*/bin/peerjs --port 9001 .*$"
 			stop program = "/bin/bash -l /opt/via/via_base/server/stop_peerjs_server.sh" as uid "{{remoteUser}}" gid "adm" with timeout 90 seconds
  			if 7 restarts within 10 cycles then stop
 			if cpu > 60% for 4 cycles then alert
+
+# Diskspace
+check device disk with path /
+   		if SPACE usage > 90% then alert
