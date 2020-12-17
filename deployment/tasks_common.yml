@@ -307,11 +307,21 @@
       minute: "0"
       hour: "3,12"
       job: "cd {{via.installationPath}}/via_base/server && cronic ./backup.sh {{stoneName}} {{via.backupTarget}}"
+  - name: Cleanup tmp files cron job
+    cron:
+      name: "Cleanup tmp files of {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "0"
+      hour: "2"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_tmp_files.sh"
+  - name: Cleanup old tranlog files cron job
+    cron:
+      name: "Cleanup old GemStone tranlog files of {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "5"
+      hour: "2"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_tranlogs.sh"
 
-      
-  # TODO
-  # 0 1 * * * cd /opt/321via/repo/maintenance && ./delete_old_tranlogs.sh
-  # 30 1 * * * cd /opt/321via/repo/maintenance && ./delete_old_tmp_files.sh
 
 
   #
