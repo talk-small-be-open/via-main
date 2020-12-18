@@ -25,6 +25,41 @@ function debounce(func, threshold, execAsap) {
   };
 }
 
+// Video manipulation in the backend
+
+Number.prototype.secondsToVideoTime = function (withMs = false) {
+  var sec_num = this;
+
+  var h = Math.floor(sec_num / 3600);
+  var m = Math.floor(sec_num % 3600 / 60);
+  var s = Math.floor(sec_num % 3600 % 60);
+  var centoseconds = Math.floor((sec_num % 1) * 100);
+
+	var string = ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2);
+
+	if (withMs) {
+		string = string + "." + ('00' + centoseconds).slice(-2);
+	}
+	
+  return string
+}
+
+
+function videoTakeTime(videoElementId, inputElementId, withMs = false) {
+	var ct = document.getElementById(videoElementId).currentTime;
+
+	if (!withMs) {
+		ct = Math.floor(ct);
+	}
+	
+	$("#"+inputElementId).val(ct.secondsToVideoTime(withMs)).data("sec", ct)
+}
+
+function videoGoto(videoElementId, inputElementId) {
+	document.getElementById(videoElementId).currentTime = $("#"+inputElementId).data("sec");
+}
+
+
 /* Haupt JS init */
 $(document).ready(function(){
 

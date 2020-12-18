@@ -86,8 +86,17 @@
       - "{{via.installationPath}}/install"
       - "{{via.installationPath}}/export"
       - "{{via.installationPath}}/log"
-      - "{{via.installationPath}}/tmp"
 
+  - name: Create basic installation folders, shared with www-data
+    file:
+      path: "{{item}}"
+      state: directory
+      mode: "u+rwx,g+rxs,o+rx"
+      owner: '{{remoteUser}}'
+      group: 'www-data'
+    with_items:
+      - "{{via.installationPath}}/tmp"
+      
   - name: Create GemStone GsDevKit_home folder
     file:
       path: "/opt/GsDevKit_home"

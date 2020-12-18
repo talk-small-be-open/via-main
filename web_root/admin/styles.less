@@ -17,6 +17,14 @@
 		}
 }
 
+.noUserSelect {
+		
+		user-select: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		cursor: default;
+}
 
 
 
@@ -434,7 +442,13 @@ div.taskEditor {
 								font-weight: bold;
 						}
 
-						
+						div.videoTimingTools {
+								.noUserSelect();
+								a {
+										.clickAction();
+										margin-right: 1em;
+								}
+						}
 				}
 		}
 
