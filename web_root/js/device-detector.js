@@ -1,8 +1,10 @@
 // JavaScript Browser detection (intentionally not using navigator.userAgent, can be faked)
 // Credit: https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 
+var ua = navigator.userAgent;
+
 // Opera 8.0+
-var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || ua.indexOf(' OPR/') >= 0;
 
 // Firefox 1.0+
 var isFirefox = typeof InstallTrigger !== 'undefined';
@@ -20,10 +22,14 @@ var isEdge = !isIE && !!window.StyleMedia;
 var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 
 // Edge (based on chromium) detection
-var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
+var isEdgeChromium = isChrome && (ua.indexOf("Edg") != -1);
 
 // Blink engine detection
 var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+var isIos = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+var isWebkit = !!ua.match(/WebKit/i);
+var isIosSafari = isIos && isWebkit && !ua.match(/CriOS/i);
 
 var detectedBrowser = 'unknown';
 if (isOpera) { detectedBrowser = 'Opera' }
@@ -34,3 +40,5 @@ if (isEdge) { detectedBrowser = 'Edge' }
 if (isChrome) { detectedBrowser = 'Chrome' }
 if (isEdgeChromium) { detectedBrowser = 'EdgeChromium' }
 if (isBlink) { detectedBrowser = 'Blink' }
+
+if (isIosSafari) { detectedBrowser = 'iOSSafari' }

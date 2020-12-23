@@ -7,6 +7,25 @@
   #     group: root
 
 
+  - name: Create working user convenience symlink for stone
+    file:
+      dest: "/home/{{remoteUser}}/stone"
+      src: "/opt/GsDevKit_home/server/stones/{{stoneName}}"
+      state: link
+
+  - name: Create working user convenience symlink for via_base
+    file:
+      dest: "/home/{{remoteUser}}/vb"
+      src: "{{via.installationPath}}/via_base"
+      state: link
+
+  - name: Create working user convenience symlink for via_site
+    file:
+      dest: "/home/{{remoteUser}}/vs"
+      src: "{{via.installationPath}}/via_site"
+      state: link
+
+
   #
   # Sysctl settings
   #
