@@ -12,9 +12,9 @@ http {
     # Strange. But found it on google
     server_names_hash_bucket_size 64;
     
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-    '$status $body_bytes_sent "$http_referer" '
-    '"$http_user_agent" "$http_x_forwarded_for"';
+    # log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    # '$status $body_bytes_sent "$http_referer" '
+    # '"$http_user_agent" "$http_x_forwarded_for"';
 
     sendfile        on;
     keepalive_timeout  65;
@@ -48,28 +48,13 @@ http {
 
         # TODO: Filter by GeoIP, Bad bots blocker, ...
 
-        {% if via.useSsl %}
-        
-        listen 443 ssl http2;
-
-        ssl_certificate /etc/letsencrypt/live/via/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/via/privkey.pem;
-        include /etc/letsencrypt/options-ssl-nginx.conf;
-        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-        {% else %}
-        listen 80;
-        {% endif %}
+				{% include 'listen_port.j2' %}
 
         server_name {{via.appDomains|join(" ")}};
 
         root {{via.installationPath}}/via_base/web_root;
 
-				# Simple block some annoying idiots
-				# OPTIMIZE: Use something like https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker
-				if ($http_user_agent ~ (LieBaoFast|UCBrowser|MQQBrowser|Mb2345Browser|zh-CN|MicroMessenger|zh_CN|Kinza|Bytespider|Baiduspider|Sogou|AspiegelBot|PetalBot|adscanner|serpstatbot|spaziodat|undefined) ) {
-					 return 403;
-				}
+				{% include 'block_idiots.j2' %}
 
         # Pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
         #
@@ -113,48 +98,13 @@ http {
 						# Since the demo is public
 						limit_req zone=demo burst=5;
 
-						{% include 'betatest_auth.j2' %}
+						# On purpose no beta authentication here, since this can be used to show the product,
+						# and can be disabled in the backend anyway
             
 						{% include 'proxy_to_gems.j2' %}
         }
 
-        # Control access to portal page
-        location /portal {
-
-						# Limit access speed
-						limit_req zone=app burst=5;
-
-						{% include 'betatest_auth.j2' %}
-            
-						{% include 'proxy_to_gems.j2' %}
-        }
-
-
-        # Caching, see https://web.dev/http-cache/
-
-        # Aggressively cache assets
-        location /assets {
-            add_header Cache-Control "public, max-age=31536000";
-            etag on;
-            access_log off;
-        }
-
-        # Moderately cache application static files CSS/JS
-        {% for path in ['/js', '/css', '/images', '/site', '/lib'] -%}
-        location {{path}} {
-            {% if via.isBeta -%}
-            # Cache for 5 minutes
-            add_header Cache-Control "public, no-cache, max-age=300";
-            {% else -%}
-            # Cache for 24h
-            add_header Cache-Control "public, no-cache, max-age=361440";
-            {% endif %}
-
-            etag on;
-            access_log off;
-        }
-        {% endfor %}
-
+				{% include 'cached_locations.j2' %}
 
 				# P2P Server of peerjs
 				# See https://github.com/peers/peerjs-server
@@ -199,11 +149,70 @@ http {
 
     }
 
+
+		# Portal website(s)
+		{% if via.portalDomains %}
+    server {
+
+				{% include 'listen_port.j2' %}
+
+        server_name {{via.portalDomains|join(" ")}};
+
+        root {{via.installationPath}}/via_base/web_root;
+
+
+				{% include 'block_idiots.j2' %}
+
+				# If root is accessed, then redirect to /portal
+				location = / {
+    		 	  return 301 $scheme://$host/portal;
+				}
+
+        # General rule, serve static file or redirect to app
+        location / {
+
+						{% include 'betatest_auth.j2' %}
+            
+            try_files $uri @gemstone;
+        }
+
+
+        # Control access to portal page
+        location /portal {
+
+						# Limit access speed
+						limit_req zone=app burst=5;
+
+						{% include 'betatest_auth.j2' %}
+            
+						{% include 'proxy_to_gems.j2' %}
+        }
+
+
+				{% include 'cached_locations.j2' %}
+
+
+        # Reverse proxy to GemStone gems
+        location @gemstone {
+						{% include 'proxy_to_gems.j2' %}
+        }
+
+
+        # Custom error page, if App is not running (looks nicer)
+        error_page 502 /errors/502.html;
+
+    }
+		{% endif %}
+		
+
     {% if via.useSsl %}
     # Redirect HTTP->HTTPS
     server {
         listen     80;
 				server_name {{via.appDomains|join(" ")}};
+				{% if via.portalDomains %}
+        server_name {{via.portalDomains|join(" ")}};
+				{% endif %}
 
         return 301 https://$host$request_uri;
     }

@@ -31,4 +31,4 @@
 
 
 # Include site specific tasks
-- include_tasks: "site/tasks_{{instanceName}}.yml"
+- import_tasks: "site/tasks_{{instanceName}}.yml"

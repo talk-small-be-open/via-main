@@ -96,10 +96,12 @@
         - 'pigz'
         - 'cronic'
         - 'duplicity'
+        - 'python-boto'
         - 'iperf3'
         - 'figlet'
         - 'nodejs'
         - 'npm'
+        - 'goaccess'
       state: present
 
       
@@ -395,4 +397,4 @@
       owner: "{{remoteUser}}"
       mode: 0600
 
-  - include_tasks: tasks_firewall.yml
+  - import_tasks: tasks_firewall.yml

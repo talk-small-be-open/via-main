@@ -25,7 +25,7 @@
   # - name: Install maintenance screen
   # - name: Do backup of data
 
-  - include_tasks: tasks_git_update.yml
+  - import_tasks: tasks_git_update.yml
     when: gemstoneOnly is not defined
 
   - name: Create Smalltalk updater script
@@ -37,7 +37,7 @@
       mode: "u=rwx,g=rwx,o=rx"
 
     
-  - include_tasks: tasks_common.yml
+  - import_tasks: tasks_common.yml
     when: gemstoneOnly is not defined
 
   - name: Stopping VIA's web instances (gems)
@@ -150,4 +150,4 @@
 # TODO
 #  - name: Remove maintenance screen
 
-  - include_tasks: tasks_common_end.yml
+  - import_tasks: tasks_common_end.yml

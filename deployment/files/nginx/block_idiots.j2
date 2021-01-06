@@ -1,0 +1,5 @@
+# Simple block some annoying idiots
+# OPTIMIZE: Use something like https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker
+if ($http_user_agent ~ (LieBaoFast|UCBrowser|MQQBrowser|Mb2345Browser|zh-CN|MicroMessenger|zh_CN|Kinza|Bytespider|Baiduspider|Sogou|AspiegelBot|PetalBot|adscanner|serpstatbot|spaziodat|undefined) ) {
+	 return 403;
+}
