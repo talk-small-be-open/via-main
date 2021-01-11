@@ -5,13 +5,13 @@
 # Usage: ./deploy.sh <name of instance>
 # Example: ./deploy.sh production
 
-while getopts "n" opt; do
+while getopts "g" opt; do
 		case ${opt} in
-				n ) # process option h
+				g ) # process option h
 						GEMSTONE_ONLY="-e gemstoneOnly=true"
 						shift
 						;;
-				\? ) echo "Usage: cmd [-n]"
+				\? ) echo "Usage: cmd [-g = gemstone only]"
 						 exit
 						 ;;
 		esac

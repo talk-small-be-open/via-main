@@ -73,8 +73,12 @@
     lineinfile:
       path: /etc/hosts
       line: "127.0.0.1 {{ansible_hostname}}"
-      
-        
+
+
+  #
+  # apt packages
+  #
+
   - name: Install basic apt packages
     apt:
       name:
@@ -156,7 +160,26 @@
       name: peer
       version: 0.5.3
       global: yes
-  
+
+
+  #
+  # HAPROXY LOAD BALANCER
+  #
+  - name: Add apt repo for haproxy
+    apt_repository:
+      repo: ppa:vbernat/haproxy-1.8
+  - name: haproxy package
+    apt:
+      name: haproxy=1.8.*
+  - name: haproxy.cfg file
+    template:
+      src: files/haproxy/haproxy.cfg.j2
+      dest: /etc/haproxy/haproxy.cfg
+      owner: 'root'
+      group: 'root'
+    notify:
+      - restart haproxy
+    
   #
   # NGINX WEBSERVER
   #

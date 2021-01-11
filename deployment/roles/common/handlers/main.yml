@@ -12,6 +12,12 @@
     enabled: yes
     state: restarted
 
+- name: restart haproxy
+  service:
+    name: haproxy
+    enabled: yes
+    state: restarted
+
 - name: restart monit
   service:
     name: monit

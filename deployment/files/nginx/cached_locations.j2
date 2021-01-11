@@ -2,23 +2,28 @@
 
 # Aggressively cache assets
 location /assets {
-  add_header Cache-Control "public, max-age=31536000";
+	add_header Cache-Control "public, max-age=31536000";
 	etag on;
 	access_log off;
+
+	# Assets streaming/download slow down after first couple megabytes
+	limit_rate 1m;
+	limit_rate_after 10m;
+
 }
 
 # Moderately cache application static files CSS/JS
 {% for path in ['/js', '/css', '/images', '/site', '/lib'] -%}
 	 location {{path}} {
-	   {% if via.isBeta -%}
-	 	 # Cache for 5 minutes
-	 	 add_header Cache-Control "public, no-cache, max-age=300";
-	 	 {% else -%}
-	 	 # Cache for 24h
-	 	 add_header Cache-Control "public, no-cache, max-age=361440";
-	 	 {% endif %}
+		 {% if via.isBeta -%}
+		 # Cache for 5 minutes
+		 add_header Cache-Control "public, no-cache, max-age=300";
+		 {% else -%}
+		 # Cache for 24h
+		 add_header Cache-Control "public, no-cache, max-age=361440";
+		 {% endif %}
 
-	 	 etag on;
-	 	 access_log off;
+		 etag on;
+		 access_log off;
 	 }
 {% endfor %}

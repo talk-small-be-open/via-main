@@ -3,6 +3,11 @@
     name: php7.2-fpm
     state: started
 
+- name: Ensure haproxy is running
+  service:
+    name: haproxy
+    state: started
+
 - name: Ensure nginx is running
   service:
     name: nginx

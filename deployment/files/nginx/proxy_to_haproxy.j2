@@ -1,0 +1,13 @@
+# Never cache anything from the Seaside application
+expires -1;
+add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0, proxy-revalidate";
+
+proxy_pass http://haproxy_upstream;
+
+# For upstream keepalive to work properly
+proxy_http_version 1.1;
+proxy_set_header Connection "";
+
+# Forwards
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-For $remote_addr;
