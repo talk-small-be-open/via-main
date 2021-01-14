@@ -18,7 +18,18 @@ function p2pInit(elementId, myPeerId, onDataFunction) {
 	p2pConnections = {};
 
 	var openPeer = new Promise( (resolve, reject) => {
-	  var peer = new Peer(myPeerId, {host: "/", port: 443, path: "/peerjs", secure: true, debug: 0, pingInterval: 2000, });
+	  var peer = new Peer(myPeerId, {
+			host: "/",
+			port: 443,
+			path: "/peerjs",
+			secure: true,
+			debug: 0,
+			pingInterval: 2000,
+			config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }], 'sdpSemantics': 'unified-plan' },
+		});
+
+		
+												 
 		var element = document.getElementById(elementId);
 	
 	  peer.on("open", function(id) {

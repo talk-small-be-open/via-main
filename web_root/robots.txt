@@ -4,10 +4,6 @@ Disallow: /files/
 User-agent: *
 Disallow: /app?*
 
-User-agent: SemrushBot
-Disallow: /
+Crawl-delay: 10
 
-User-agent: adscanner
-Disallow: /
-
-Crawl-delay: 5
+#TBD: Insert automatic updates from a bad bots blocker

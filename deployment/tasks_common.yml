@@ -160,6 +160,14 @@
       name: peer
       version: 0.5.3
       global: yes
+  - name: Custom log file for peerjs
+    copy:
+      content: "PeerJS log file"
+      force: no
+      dest: /var/log/peerjs.log
+      owner: '{{remoteUser}}'
+      group: '{{remoteUser}}'
+#      mode: 
 
 
   #

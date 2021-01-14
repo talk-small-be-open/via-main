@@ -7,13 +7,21 @@
     update: yes
     force: no
 
-- name: Folder permissions for webserver (www-data)
+- name: Sticky folder permissions for webserver (www-data)
   file:
     path: "{{via.installationPath}}/via_base/web_root"
     state: directory
 #    recurse: yes
     mode: "u=rwxs,g=rxs,o=rxs"
     owner: '{{remoteUser}}'
+    group: 'www-data'
+
+- name: Ensure readable folder permissions for webserver (www-data)
+  file:
+    path: "{{via.installationPath}}/via_base/web_root"
+    state: directory
+    recurse: yes
+    mode: "g+r"
     group: 'www-data'
 
   

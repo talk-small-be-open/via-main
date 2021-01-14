@@ -54,8 +54,6 @@ http {
 		#
 		server {
 
-				# TODO: Filter by GeoIP, Bad bots blocker, ...
-
 				{% include 'listen_port.j2' %}
 
 				server_name {{via.appDomains|join(" ")}};
@@ -77,24 +75,15 @@ http {
 						return 301 $scheme://$host/app;
 				}
 
-				# General rule, serve static file or redirect to app
-				# Serves only as a general fallback, since for most frontend pathes
-				# we have a dedicated rule
-				location / {
-
-						{% include 'betatest_auth.j2' %}
-						
-						try_files $uri @haproxy;
-				}
-
-
 				{% for path in ['/app', '/via-admin'] -%}
 				# Speedup access to main app (Frontend and Backend)
 				location {{path}} {
 
+						# OPTIMIZE: Limits better done on HAProxy
 						# Limit access speed. should use nodelay?
-						limit_req zone=app burst=40;
-						# limit_conn app 5;
+						limit_req zone=app burst=60;
+
+						# # limit_conn app 5;
 
 						{% include 'betatest_auth.j2' %}
 						
@@ -133,9 +122,15 @@ http {
 						proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 				}
 
-
+				# General rule, serve static file or redirect to app
+				# Serves only as a general fallback, since for most frontend pathes
+				# we have a dedicated rule
+				location / {
+						try_files $uri @haproxy;
+				}
 
 				location @haproxy {
+						{% include 'betatest_auth.j2' %}
 						{% include 'proxy_to_haproxy.j2' %}
 				}
 
@@ -154,8 +149,7 @@ http {
 						root /;
 				}
 
-				# Custom error page, if App is not running (looks nicer)
-				error_page 502 /errors/502.html;
+				{% include 'error_handling.j2' %}
 
 		}
 
@@ -178,12 +172,6 @@ http {
 						return 301 $scheme://$host/portal;
 				}
 
-				# General rule, serve static file or redirect to app
-				location / {
-						
-						try_files $uri @haproxy;
-				}
-
 
 				# Control access to portal page
 				location /portal {
@@ -199,16 +187,18 @@ http {
 
 				{% include 'cached_locations.j2' %}
 
+				# General rule, serve static file or redirect to app
+				location / {
+						try_files $uri @haproxy;
+				}
 
 				location @haproxy {
 						{% include 'betatest_auth.j2' %}
-
 						{% include 'proxy_to_haproxy.j2' %}
 				}
 
 
-				# Custom error page, if App is not running (looks nicer)
-				error_page 502 /errors/502.html;
+				{% include 'error_handling.j2' %}
 
 		}
 		{% endif %}

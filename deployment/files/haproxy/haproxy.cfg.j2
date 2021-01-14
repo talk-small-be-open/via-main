@@ -23,20 +23,56 @@ defaults
 		errorfile 503 /etc/haproxy/errors/503.http
 		errorfile 504 /etc/haproxy/errors/504.http
 
+
+
 frontend nginx
 		bind 127.0.0.1:9000
 		default_backend gems
 
+		# # Rate limiting, sliding window, see https://www.haproxy.com/blog/four-examples-of-haproxy-rate-limiting/
+		# stick-table  type ip  size 100k  expire 30s  store http_req_rate(10s)
+    # http-request track-sc0 src
+    # http-request deny deny_status 429 if { sc_http_req_rate(0) gt 20 }
+
+		# # or this?
+		# rate-limit sessions 10
+
+		# # or this?
+		# # https://medium.com/faun/understanding-rate-limiting-on-haproxy-b0cf500310b1
+    # # ACL function declarations
+    # acl is_abuse src_http_req_rate(Abuse) ge 10  
+    # acl inc_abuse_cnt src_inc_gpc0(Abuse) gt 0   
+    # acl abuse_cnt src_get_gpc0(Abuse) gt 0
+    # # Rules
+    # tcp-request connection track-sc0 src table Abuse
+    # tcp-request connection reject if abuse_cnt
+    # http-request deny if abuse_cnt
+    # http-request deny if is_abuse inc_abuse_cnt
+
+		# see also
+		# https://gist.github.com/procrastinatio/6b6579230d99be5bfa26d04acd788e7a
+
+
+# # Pseudo backend to store rates
+# backend Abuse
+#     # stick-table type ip size 100K expire 30m store gpc0,http_req_rate(10s)
+# 		# better: IP taken from XFF
+# 		stick-table type integer size 100K expire 30m store gpc0,http_req_rate(10s)
+
 backend gems
 		balance roundrobin
-
 		default-server check inter 30s maxconn 1 maxqueue 10 non-stick
+
+		# # Save real ip in the table
+		# stick store-request req.fhdr(X-Forwarded-For) table Abuse
+
 
 		# option httpclose
 		# Because of Seaside server, which cant handle keepalive?
 		option http-server-close
 		
-		option forwardfor
+#DONT, X-Forwarded-For is already added by nginx		option forwardfor
+
 		option httpchk GET /ping
 #		http-check send
 
