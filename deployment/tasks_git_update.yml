@@ -9,20 +9,26 @@
 
 - name: Sticky folder permissions for webserver (www-data)
   file:
-    path: "{{via.installationPath}}/via_base/web_root"
+    path: "{{item}}"
     state: directory
 #    recurse: yes
     mode: "u=rwxs,g=rxs,o=rxs"
     owner: '{{remoteUser}}'
     group: 'www-data'
+  with_items:
+    - "{{via.installationPath}}/via_base/web_root"
+    - "{{via.installationPath}}/via_site/web_root"
 
 - name: Ensure readable folder permissions for webserver (www-data)
   file:
-    path: "{{via.installationPath}}/via_base/web_root"
+    path: "{{item}}"
     state: directory
     recurse: yes
     mode: "g+r"
     group: 'www-data'
+  with_items:
+    - "{{via.installationPath}}/via_base/web_root"
+    - "{{via.installationPath}}/via_site/web_root"
 
   
 - name: git repo VIA site code

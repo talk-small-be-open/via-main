@@ -46,6 +46,11 @@
       owner: root
       group: root
 
+
+  #
+  # User config
+  #
+  
   - name: Copy SSH config
     copy:
       src: files/ssh/config
@@ -61,6 +66,15 @@
     with_fileglob:
       - "files/ssh/authorized_keys/*"
 
+  - name: Copy tmux config
+    copy:
+      src: files/user/tmux.conf
+      dest: "/home/{{remoteUser}}/.tmux.conf"
+      owner: "{{remoteUser}}"
+      group: "{{remoteUser}}"
+
+
+    
   #
   # hosts file
   #
@@ -106,6 +120,7 @@
         - 'nodejs'
         - 'npm'
         - 'goaccess'
+        - 'tmux'
       state: present
 
       

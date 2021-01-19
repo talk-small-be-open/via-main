@@ -148,6 +148,10 @@ http {
 						internal;
 						root /;
 				}
+				location {{via.installationPath}}/via_base/web_root/site/downloads {
+						internal;
+						root /;
+				}
 
 				{% include 'error_handling.j2' %}
 
