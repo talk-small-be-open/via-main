@@ -69,23 +69,9 @@ if (!$chunks || $chunk == $chunks - 1) {
 	rename("{$filePath}.part", $filePath);
 }
 
-
-// Production Server on Linux
-if (PHP_OS == 'Linux') {
-    // chown($filePath, 'ubuntu');
-    chgrp($targetDir, 'ubuntu');
-    chgrp($filePath, 'ubuntu');
-}   
-
-// Development on MacOS
-if (PHP_OS == 'Darwin') {
-    // chown($filePath, 'ubuntu');
-    chgrp($targetDir, 'everyone');
-    chgrp($filePath, 'everyone');
-}   
-
-chmod($targetDir, 0775);
-chmod($filePath, 0660);
+// Application needs full access on the temporary file. Will be deleted immediately after being copied.
+chmod($targetDir, 0777);
+chmod($filePath, 0666);
 
 // Status is OK, if we get to here
 http_response_code(200);
