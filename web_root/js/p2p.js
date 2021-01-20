@@ -25,7 +25,7 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 			secure: true,
 			debug: 0,
 			pingInterval: 2000,
-		}
+		};
 
 		if (turnConfig.host) {
 			peerOptions.config = { iceServers: [
