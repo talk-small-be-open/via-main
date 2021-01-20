@@ -13,22 +13,28 @@
 
 var p2pPeers, p2pConnections;
 
-function p2pInit(elementId, myPeerId, onDataFunction) {
+function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 	p2pPeers = {};
 	p2pConnections = {};
 
 	var openPeer = new Promise( (resolve, reject) => {
-	  var peer = new Peer(myPeerId, {
+		var peerOptions = {
 			host: "/",
 			port: 443,
 			path: "/peerjs",
 			secure: true,
 			debug: 0,
 			pingInterval: 2000,
-			config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }], 'sdpSemantics': 'unified-plan' },
-		});
+		}
 
+		if (turnConfig.host) {
+			peerOptions.config = { iceServers: [
+				{ urls: ('turn:' + turnConfig.host), username: turnConfig.username, credentials: turnConfig.credentials},
+				{ urls: 'stun:stun.l.google.com:19302' }
+			]}
+		}
 		
+	  var peer = new Peer(myPeerId, peerOptions);
 												 
 		var element = document.getElementById(elementId);
 	
@@ -88,8 +94,8 @@ function p2pOnData(elementId, data, connection, callback) {
 }
 
 
-function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null, sendOnConnect = null) {
-	return p2pInit(elementId, myPeerId, onDataFunction).then(peer => {
+function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null, sendOnConnect = null, turnConfig = {}) {
+	return p2pInit(elementId, myPeerId, onDataFunction, turnConfig).then(peer => {
 
 		if (otherPeerId) {
 			console.log('P2P Trying to contact', otherPeerId);
