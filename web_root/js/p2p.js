@@ -11,11 +11,12 @@
 //
 // Seems to me a bit too much C-style programming, but anyway, keep it simple in here
 
-var p2pPeers, p2pConnections;
+var p2pPeers = {};
+var p2pConnections = {};
 
 function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
-	p2pPeers = {};
-	p2pConnections = {};
+	// p2pPeers = {};
+	// p2pConnections = {};
 
 	var openPeer = new Promise( (resolve, reject) => {
 		var peerOptions = {
@@ -28,8 +29,8 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 		};
 
 		if (turnConfig.host) {
-			peerOptions.config = { iceServers: [
-				{ urls: ('turn:' + turnConfig.host), username: turnConfig.username, credentials: turnConfig.credentials},
+			peerOptions['config'] = { iceServers: [
+				{ urls: ('turn:' + turnConfig.host), username: turnConfig.username, credential: turnConfig.credential},
 				{ urls: 'stun:stun.l.google.com:19302' }
 			]}
 		}
