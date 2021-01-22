@@ -24,10 +24,13 @@ GRNotificationBasedDynamicVariable subclass: 'WADynamicVariable'
 
   db := VIADatabase current.
 
-	"Configuration"
+	"First time configuration"
 	db
 		propertyAt: #fileStoragePath put: '{{via.installationPath}}/via_base/web_root';
 		propertyAt: #tmpPath put: '{{via.installationPath}}/via_base/main/tmp'.
+
+	{% include 'configuration.st.j2' %}
+
 
 	"TODO: Set domain of the first website"
 

@@ -25,7 +25,18 @@
       src: "{{via.installationPath}}/via_site"
       state: link
 
+  - name: Create working user convenience symlink for shell cockpit
+    file:
+      dest: "/home/{{remoteUser}}/vc.sh"
+      src: "{{via.installationPath}}/via_base/server/via_cockpit.sh"
+      state: link
 
+  - name: Create working user convenience symlink for start tode client (X11)
+    file:
+      dest: "/home/{{remoteUser}}/ot.sh"
+      src: "{{via.installationPath}}/via_base/server/open_tode.sh"
+      state: link
+      
   #
   # Sysctl settings
   #
@@ -96,6 +107,7 @@
   - name: Install basic apt packages
     apt:
       name:
+        - 'ufw'
         - 'unattended-upgrades'
         - 'monit'
         - 'git'
@@ -121,6 +133,8 @@
         - 'npm'
         - 'goaccess'
         - 'tmux'
+        - 'lnav'
+        - 'coturn'
       state: present
 
       
@@ -214,7 +228,52 @@
       group: 'root'
     notify:
       - restart nginx
+  - name: via virtual host
+    template:
+      src: files/nginx/via.vhost.j2
+      dest: /etc/nginx/sites-available/via.vhost
+      owner: 'root'
+      group: 'root'
+    notify:
+      - restart nginx
+  - name: enable symlink for that
+    file:
+      dest: /etc/nginx/sites-enabled/via.vhost
+      src: /etc/nginx/sites-available/via.vhost
+      state: link
+  - name: default virtual host
+    template:
+      src: files/nginx/default.vhost.j2
+      dest: /etc/nginx/sites-available/default
+      owner: 'root'
+      group: 'root'
+    notify:
+      - restart nginx
+  - name: enable symlink for that
+    file:
+      dest: /etc/nginx/sites-enabled/default
+      src: /etc/nginx/sites-available/default
+      state: link
 
+  # See also https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker
+  - name: install ngxblocker
+    become_user: "root"
+    shell: |
+      wget https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/install-ngxblocker -O /usr/local/sbin/install-ngxblocker
+      chmod +x /usr/local/sbin/install-ngxblocker
+      pushd /usr/local/sbin
+      ./install-ngxblocker -x
+      # setup, but do not insert nginx conf stuff, because we already have it (-z)
+      chmod +x /usr/local/sbin/setup-ngxblocker
+      chmod +x /usr/local/sbin/update-ngxblocker
+      ./setup-ngxblocker -x -z
+      popd
+
+    args:
+#      chdir: "{{via.installationPath}}/install"
+      creates: "/usr/local/sbin/install-ngxblocker"
+      
+    
   - name: lib für htpasswd module
     when: via.isBeta
     apt: pkg=python3-passlib
@@ -340,7 +399,16 @@
       hour: "1"
       weekday: "0"
       job: "cronic certbot --nginx renew"
-
+  - name: "cron: ngxblocker updates"
+    cron:
+      name: ngxblocker update
+      user: root
+      minute: "0"
+      hour: "22"
+      weekday: "*"
+#      job: "cronic /usr/local/sbin/update-ngxblocker -e {{via.adminEmail}}"
+      job: "/usr/local/sbin/update-ngxblocker -e {{via.adminEmail}}"
+    
 # TODO Deactivate cronjob from apt package certbot
 # Deactivate systemd timer (systemctl show certbot.timer)
 # Because they do not work standalone (port 80 taken)
@@ -406,6 +474,24 @@
       mode: 0600
   
 
+  #
+  # TURN Server (coturn)
+  #
+  - name: TURN config
+    template:
+      backup: yes
+      src: "files/coturn/turnserver.conf.j2"
+      dest: "/etc/turnserver.conf"
+      owner: 'root'
+    notify:
+      - restart coturn
+  - name: coturn TURN server enabled
+    lineinfile:
+      path: /etc/default/coturn
+      line: "TURNSERVER_ENABLED=1"
+    notify:
+      - restart coturn
+    
 
   #
   # GemStone configuration

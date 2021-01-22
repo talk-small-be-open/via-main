@@ -19,6 +19,11 @@
     state: started
     use: sysvinit
 
+- name: Ensure coturn is running
+  service:
+    name: coturn
+    state: started
+    
 - name: Wait for port 2812 to become open (Monit)
   wait_for:
     port: 2812

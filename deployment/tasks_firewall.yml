@@ -36,6 +36,12 @@
 - ufw:
     rule: allow
     name: mosh
+
+# Allow coturn, TURN server
+- ufw:
+    rule: allow
+    name: Turnserver
+
   
 - name: Allow all access to tcp port 80
   ufw:

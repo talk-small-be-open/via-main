@@ -1,0 +1,171 @@
+		#
+		# Via main server
+		#
+		server {
+
+				{% include 'listen_port.j2' %}
+
+				server_name {{via.appDomains|join(" ")}};
+
+				root {{via.installationPath}}/via_base/web_root;
+
+				{% include 'block_idiots.j2' %}
+
+				# Pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+				#
+				# For uploader PlUpload
+				location ~ \.php$ {
+						include snippets/fastcgi-php.conf;
+						fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+				}
+
+				# If root is accessed, then redirect to app
+				location = / {
+						return 301 $scheme://$host/app;
+				}
+
+				{% for path in ['/app', '/via-admin'] -%}
+				# Speedup access to main app (Frontend and Backend)
+				location {{path}} {
+
+						# OPTIMIZE: Limits better done on HAProxy
+						# Limit access speed. should use nodelay?
+						limit_req zone=app burst=60;
+
+						# # limit_conn app 5;
+
+						{% include 'betatest_auth.j2' %}
+						
+						{% include 'proxy_to_haproxy.j2' %}
+				}
+				{% endfor %}
+
+				# Control access to demo app
+				# See https://docs.nginx.com/nginx/admin-guide/security-controls/controlling-access-proxied-http/#limit_req
+				location /demo {
+
+						# Since the demo is public
+						limit_req zone=demo burst=20;
+
+						# On purpose no beta authentication here, since this can be used to show the product,
+						# and can be disabled in the backend anyway
+						
+						{% include 'proxy_to_haproxy.j2' %}
+				}
+
+				{% include 'cached_locations.j2' %}
+
+				# P2P Server of peerjs
+				# See https://github.com/peers/peerjs-server
+				location /peerjs/ {
+						proxy_pass	 http://127.0.0.1:9001/peerjs/;
+						# proxy_pass_request_headers			on;
+						# proxy_set_header Host						 $host;
+						# proxy_set_header X-Forwarded-For $remote_addr;
+
+						# WebSocket proxying, see https://nginx.org/en/docs/http/websocket.html
+						proxy_http_version 1.1;
+						proxy_set_header Upgrade $http_upgrade;
+						proxy_set_header Connection $connection_upgrade;
+						proxy_set_header Host $host;
+						proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+				}
+
+				# General rule, serve static file or redirect to app
+				# Serves only as a general fallback, since for most frontend pathes
+				# we have a dedicated rule
+				location / {
+						try_files $uri @haproxy;
+				}
+
+				location @haproxy {
+						{% include 'betatest_auth.j2' %}
+						{% include 'proxy_to_haproxy.j2' %}
+				}
+
+
+				# X-Sendfile for generated files (ZIP, PDF, ...) and asset file download
+				location {{via.installationPath}}/tmp {
+						internal;
+						root /;
+				}
+				location {{via.installationPath}}/via_base/tmp {
+						internal;
+						root /;
+				}
+				location {{via.installationPath}}/via_base/web_root/assets {
+						internal;
+						root /;
+				}
+				location {{via.installationPath}}/via_base/web_root/site/downloads {
+						internal;
+						root /;
+				}
+
+				{% include 'error_handling.j2' %}
+
+		}
+
+
+		# Portal website(s)
+		{% if via.portalDomains %}
+		server {
+
+				{% include 'listen_port.j2' %}
+
+				server_name {{via.portalDomains|join(" ")}};
+
+				root {{via.installationPath}}/via_base/web_root;
+
+
+				{% include 'block_idiots.j2' %}
+
+				# If root is accessed, then redirect to /portal
+				location = / {
+						return 301 $scheme://$host/portal;
+				}
+
+
+				# Control access to portal page
+				location /portal {
+
+						# Limit access speed
+						limit_req zone=app burst=10;
+
+						{% include 'betatest_auth.j2' %}
+						
+						{% include 'proxy_to_haproxy.j2' %}
+				}
+
+
+				{% include 'cached_locations.j2' %}
+
+				# General rule, serve static file or redirect to app
+				location / {
+						try_files $uri @haproxy;
+				}
+
+				location @haproxy {
+						{% include 'betatest_auth.j2' %}
+						{% include 'proxy_to_haproxy.j2' %}
+				}
+
+
+				{% include 'error_handling.j2' %}
+
+		}
+		{% endif %}
+		
+
+		{% if via.useSsl %}
+		# Redirect HTTP->HTTPS
+		server {
+				listen		 80;
+				server_name {{via.appDomains|join(" ")}};
+				{% if via.portalDomains %}
+				server_name {{via.portalDomains|join(" ")}};
+				{% endif %}
+
+				return 301 https://$host$request_uri;
+		}
+		{% endif %}
