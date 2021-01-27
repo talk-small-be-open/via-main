@@ -135,6 +135,7 @@
         - 'tmux'
         - 'lnav'
         - 'coturn'
+        - 'mailutils' # for ngxblocker to send emails
       state: present
 
       
@@ -258,16 +259,16 @@
   # See also https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker
   - name: install ngxblocker
     become_user: "root"
-    shell: |
-      wget https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/install-ngxblocker -O /usr/local/sbin/install-ngxblocker
-      chmod +x /usr/local/sbin/install-ngxblocker
-      pushd /usr/local/sbin
-      ./install-ngxblocker -x
-      # setup, but do not insert nginx conf stuff, because we already have it (-z)
-      chmod +x /usr/local/sbin/setup-ngxblocker
-      chmod +x /usr/local/sbin/update-ngxblocker
-      ./setup-ngxblocker -x -z
-      popd
+    shell:
+      warn: false
+      cmd: |
+        wget https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/install-ngxblocker -O /usr/local/sbin/install-ngxblocker
+        chmod +x /usr/local/sbin/install-ngxblocker
+        cd /usr/local/sbin
+        ./install-ngxblocker -x
+        chmod +x /usr/local/sbin/setup-ngxblocker
+        chmod +x /usr/local/sbin/update-ngxblocker
+        ./setup-ngxblocker -x -z
 
     args:
 #      chdir: "{{via.installationPath}}/install"
@@ -442,6 +443,14 @@
       minute: "0"
       hour: "3,12"
       job: "cd {{via.installationPath}}/via_base/server && cronic ./backup.sh {{stoneName}} {{via.backupTarget}}"
+  - name: Verifying backup cron job
+    cron:
+      name: "Verifying backup {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "0"
+      hour: "4"
+      day: "*/2"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./verify_backup.sh {{stoneName}} {{via.backupTarget}}"
   - name: Cleanup tmp files cron job
     cron:
       name: "Cleanup tmp files of {{stoneName}}"

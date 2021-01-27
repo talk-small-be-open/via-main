@@ -20,3 +20,7 @@ proxy_set_header        X-Forwarded-Host   $host:443;
 proxy_set_header        X-Forwarded-Server $host;
 proxy_set_header        X-Forwarded-Port   443;
 proxy_set_header        X-Forwarded-Proto  https;
+
+# nginx should handle http errors from haproxy
+proxy_intercept_errors on;
+

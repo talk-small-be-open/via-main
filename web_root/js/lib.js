@@ -34,18 +34,27 @@ checkCookiesAllowed();
 function saveScroll(id) {
 	if (isCookiesNotAllowed()) { return }
 	
-	var y = $(document).scrollTop();
+	//var y = $(document).scrollTop();
+	var y = window.pageYOffset || document.documentElement.scrollTop;
+
 	// Short time to live, else they would cumulate to many in the browser
 	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
 	Cookies.set("page_scroll_" + id, y, { expires: inFifteenMinutes, sameSite: "Strict", secure: true });
 }
 
+var isLoadScrollDone = false;
 function loadScroll(id) {
+	// Prevent multi-restore from many components
+	if (isLoadScrollDone) { return }
+
 	if (isCookiesNotAllowed()) { return }
 
 	var y = Cookies.get("page_scroll_" + id);
 	if (!y) {return}
-	$(document).scrollTop(y);
+	//$(document).scrollTop(y);
+	document.documentElement.scrollTop = document.body.scrollTop = y;
+
+	isLoadScrollDone = true;
 }
 
 

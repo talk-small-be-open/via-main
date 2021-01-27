@@ -60,9 +60,9 @@
 
   # Scheint nichts zu bringen?!
   # Besser ist, weiter unten: mc revert Via ???
-  - name: Flush Monticello cache
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} mr flush"
+  # - name: Flush Monticello cache
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} mr flush"
 
 
   #
@@ -135,7 +135,20 @@
         - "{{via.siteName}}"
 
   # Hack, GemStone weigert sich irgendwie zu updaten
-  - name: Monticello revert to last version (strange, why?)
+  - name: Monticello revert to last version (strange, why?) BASE
+    become_user: "{{remoteUser}}"
+    shell: "todeIt {{stoneName}} mc revert {{item}}"
+    with_items:
+      - "Via"
+      - "Pillar-ExporterCore"
+      - "Pillar-ExporterHTML"
+      - "Pillar-ExporterPillar"
+      - "Pillar-Model"
+      - "ViaPlatformGemstone"
+      - "MCL-Utils-CollectionSugar"
+        
+  # Hack, GemStone weigert sich irgendwie zu updaten
+  - name: Monticello revert to last version (strange, why?) SITE
     become_user: "{{remoteUser}}"
     shell: "todeIt {{stoneName}} mc revert {{via.siteName}}"
 
