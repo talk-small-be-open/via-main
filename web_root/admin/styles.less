@@ -102,7 +102,62 @@
 		text-align: right;
 }
 
-// }}}
+
+
+// ======================================================
+// Magnifier glass effect on images
+// ======================================================
+// * {box-sizing: border-box;}
+// .img-magnifier-container {
+//   position:relative;
+//   cursor:none;
+// }
+// .img-magnifier-container:hover .img-magnifier-glass {
+//   position: absolute;
+//   border: 3px solid #000;
+//   border-radius: 50%;
+//   cursor: none;
+//   /*Set the size of the magnifier glass:*/
+//   width: 100px;
+//   height: 100px;
+//   display:block;
+// }
+// .img-magnifier-glass {
+//   display:none;
+// }
+
+
+.zoomBox {
+    position: relative;
+//		display: contents;
+
+		img {
+				vertical-align: bottom;
+		}
+
+		.zoomSelector {
+				position: absolute;
+				background-image: url("/admin/images/view-box-selector.png");
+				background-repeat: repeat;
+				display: none;
+				cursor: crosshair;
+		}
+
+		.viewerBox {
+				position: absolute;
+				border: 1px solid rgb(239,237,240);
+				display: none;
+				overflow: hidden;
+				background-color: white;
+				
+				> img {
+						position: absolute;
+						left: 0;
+						top: 0;
+				}
+		}
+}
+		
 
 // ======================================================
 // Styles
@@ -225,7 +280,7 @@ td.actions {
 		}
 }
 
-div.VIAAdminAssetsComponent {
+div.VIAAdminAssetsComponent, div.VIAAdminAssetsUsageComponent {
 		div.toolbar {
 				label {
 						display: inline;
@@ -235,6 +290,9 @@ div.VIAAdminAssetsComponent {
 		table.adminAssets {
 				width: 100%;
 
+				// td.preview {
+				// 		im.
+				// }
 				td.assetInfo {
 						word-break: break-word;
 						div.publicComment {
@@ -699,6 +757,10 @@ div[uk-modal] {
 		}
 
 }
+
+
+
+
 
 
 

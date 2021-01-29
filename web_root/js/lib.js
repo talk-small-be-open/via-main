@@ -118,15 +118,20 @@ var lazy = [];
 
 function setLazy(){
   lazy = document.querySelectorAll('img.lazy');
-	//    console.log('Found ' + lazy.length + ' lazy images');
 } 
 
 function lazyLoad(){
   for(var i=0; i<lazy.length; i++){
-    if(isInViewport(lazy[i])){
-      if (lazy[i].getAttribute('data-src')){
-        lazy[i].src = lazy[i].getAttribute('data-src');
-        lazy[i].removeAttribute('data-src');
+		var img = lazy[i];
+    if(isInViewport(img)){
+      if (img.getAttribute('data-src')){
+        img.src = img.getAttribute('data-src');
+        img.removeAttribute('data-src');
+				
+				let event = new Event("lazyLoaded", {
+					bubbles: false
+				});
+				img.dispatchEvent(event);
       }
     }
   }
@@ -152,6 +157,10 @@ function isInViewport(el){
 }
 
 
+
+
+
+
 // Wrap a timer around another promise
 function promiseTimeout(ms, promise){
 
@@ -168,4 +177,52 @@ function promiseTimeout(ms, promise){
     promise,
     timeout
   ])
+}
+
+// Event debouncing. For stuff, which should not be done to fast repeatedly.
+// execAsap = true: execute immediately once and then never again if retriggered inside thresholdMs
+// execAsap = false: execute only after all retriggers are done inside thresholdMs
+function debounce(func, thresholdMs, execAsap) {
+  var timeout;
+
+  return function debounced () {
+
+    var obj = this, args = arguments;
+
+    function delayed () {
+      if (!execAsap) func.apply(obj, args);
+      timeout = null;
+    };
+
+    if (timeout)
+      clearTimeout(timeout);
+    else if (execAsap)
+      func.apply(obj, args);
+
+    timeout = setTimeout(delayed, thresholdMs || 100);
+  };
+}
+
+
+function handleSessionCheck(responseData) {
+	var msg;
+	
+	switch (responseData) {
+	case 'OK':
+		// alert('Session OK');
+	  break;
+	case 'expired':
+		msg = $("#expiredSessionMessage").text();
+		alert(msg);
+		location.reload(true);
+		break;
+	case 'nearlyExpired':
+		msg = $("#nearlyExpiredSessionMessage").text();
+		alert(msg);
+		// OPTIMIZE: Send keepalive here
+		break;
+	default:
+		// nothing
+	}
+	
 }

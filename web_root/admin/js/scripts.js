@@ -5,25 +5,6 @@
 // In the backend cookies are always allowed
 setCookiesAllowed();
 
-function debounce(func, threshold, execAsap) {
-  var timeout;
-
-  return function debounced () {
-    var obj = this, args = arguments;
-    function delayed () {
-      if (!execAsap)
-        func.apply(obj, args);
-      timeout = null;
-    };
-
-    if (timeout)
-      clearTimeout(timeout);
-    else if (execAsap)
-      func.apply(obj, args);
-
-    timeout = setTimeout(delayed, threshold || 100);
-  };
-}
 
 // Video manipulation in the backend
 
@@ -57,6 +38,94 @@ function videoTakeTime(videoElementId, inputElementId, withMs = false) {
 
 function videoGoto(videoElementId, inputElementId) {
 	document.getElementById(videoElementId).currentTime = $("#"+inputElementId).data("sec");
+}
+
+
+
+//
+// Image mousover zoom
+//
+
+$.fn.jqZoom = function(options){
+  $(this).each(function(i, dom){
+    var me = $(dom);
+
+		zoomBoxInit(me, options.selectorWidth, options.selectorHeight, options.viewerWidth, options.viewerHeight);
+  })
+}
+
+function zoomBoxInit(targetImg, sWidth, sHeight, vWidth, vHeight){
+  var zoom = $("<div />").addClass("zoomSelector").width(sWidth).height(sHeight);
+	var imgUrl = targetImg[0].currentSrc;
+  targetImg.after(zoom);
+  targetImg.closest(".zoomBox").on({
+    mousemove: function(e){
+      var mouseX = e.pageX - targetImg.offset().left;
+      var mouseY = e.pageY - targetImg.offset().top;
+      var halfSWidth = sWidth/2, halfSHeight = sHeight/2;
+      var realX, realY;
+			
+      if(mouseX < halfSWidth){
+        realX = 0;
+      }else if(mouseX + halfSWidth > targetImg.width()){
+        realX = targetImg.width() - sWidth;
+      }else{
+        realX = mouseX - halfSWidth;
+      }
+
+      if(mouseY < halfSHeight){
+        realY = 0;
+      }else if(mouseY + halfSHeight > targetImg.height()){
+        realY = targetImg.height() - sHeight;
+      }else{
+        realY = mouseY - halfSHeight;
+      }
+			
+      zoom.css({
+        left: realX,
+        top: realY
+      })
+
+			var viewerBox = targetImg.data('viewerBox');
+			var viewerImg = viewerBox.find("img");
+      var viewerX = realX * (viewerImg.width() - viewerBox.width())/(targetImg.width() - sWidth);
+      var viewerY = realY * (viewerImg.height() - viewerBox.height())/(targetImg.height() - sHeight);
+
+      viewerImg.css({
+        left: -viewerX,
+        top: -viewerY
+      })
+    },
+    mouseenter: function(){
+			zoomBoxInitViewer(targetImg, imgUrl, vWidth, vHeight);
+      zoom.css("display", "block");
+      targetImg.data('viewerBox').css("display", "block");
+    },
+    mouseleave: function(){
+      zoom.css("display", "none");
+      targetImg.data('viewerBox').css("display", "none");
+    }
+  })
+}
+
+function zoomBoxInitViewer(targetImg, imgUrl, vWidth, vHeight){
+
+  if (targetImg.data('viewerBox')) { return }
+
+  var viewer = $("<div />").addClass("viewerBox").width(vWidth).height(vHeight);
+//  var zoomBox = targetImg.closest(".zoomBox");
+
+	targetImg.data('viewerBox', viewer);
+
+	viewer.css({
+    left: targetImg.width() + 15,
+    top: 0
+  })
+
+  var img = $("<img src='"+imgUrl+"' />");
+  viewer.append(img);
+  targetImg.after(viewer);
+
 }
 
 
@@ -193,10 +262,22 @@ $(document).ready(function(){
 			links: {}
 		}
 	};
+
+	$("div.zoomBox img.lazy").on('lazyLoaded', function() {
+		$(this).jqZoom({
+			selectorWidth: 30,
+			selectorHeight: 30,
+			viewerWidth: 400,
+			viewerHeight: 300
+		})
+	})
 	
 	// Lazy load von Bildern installieren
 	setLazy();
 	lazyLoad();
+
+	// Performance schonen beim Scrollen
+//	$(window).on('scroll', debounce(lazyLoad, 20, false));
 	$(window).on('scroll', lazyLoad);
 
 	
