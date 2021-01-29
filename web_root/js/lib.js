@@ -125,13 +125,15 @@ function lazyLoad(){
 		var img = lazy[i];
     if(isInViewport(img)){
       if (img.getAttribute('data-src')){
-        img.src = img.getAttribute('data-src');
+			
+				img.src = img.getAttribute('data-src');
         img.removeAttribute('data-src');
-				
+
 				let event = new Event("lazyLoaded", {
 					bubbles: false
 				});
 				img.dispatchEvent(event);
+
       }
     }
   }

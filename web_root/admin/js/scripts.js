@@ -56,7 +56,6 @@ $.fn.jqZoom = function(options){
 
 function zoomBoxInit(targetImg, sWidth, sHeight, vWidth, vHeight){
   var zoom = $("<div />").addClass("zoomSelector").width(sWidth).height(sHeight);
-	var imgUrl = targetImg[0].currentSrc;
   targetImg.after(zoom);
   targetImg.closest(".zoomBox").on({
     mousemove: function(e){
@@ -97,7 +96,7 @@ function zoomBoxInit(targetImg, sWidth, sHeight, vWidth, vHeight){
       })
     },
     mouseenter: function(){
-			zoomBoxInitViewer(targetImg, imgUrl, vWidth, vHeight);
+			zoomBoxInitViewer(targetImg, vWidth, vHeight);
       zoom.css("display", "block");
       targetImg.data('viewerBox').css("display", "block");
     },
@@ -108,9 +107,11 @@ function zoomBoxInit(targetImg, sWidth, sHeight, vWidth, vHeight){
   })
 }
 
-function zoomBoxInitViewer(targetImg, imgUrl, vWidth, vHeight){
+function zoomBoxInitViewer(targetImg, vWidth, vHeight){
 
   if (targetImg.data('viewerBox')) { return }
+
+	var imgUrl = targetImg[0].currentSrc;
 
   var viewer = $("<div />").addClass("viewerBox").width(vWidth).height(vHeight);
 //  var zoomBox = targetImg.closest(".zoomBox");
