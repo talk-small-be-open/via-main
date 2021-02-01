@@ -49,12 +49,12 @@
   - name: Ensure GemStone netldi is running
     shell: monit start via_gemstone_netldi
       
-  # - name: Do GemStone backup
-  #   become_user: "{{remoteUser}}"
-  #   shell: "./backup_gemtone_db.sh"
-  #   args:
-  #     chdir: "{{via.installationPath}}/server"
+  - name: Do GemStone backup before deploy
+    become_user: "{{remoteUser}}"
+    shell: "todeBackup {{stoneName}} via_backup_before_deploy.dbf"
 
+# TODO Check if backup sucessful?
+  
   #  - name: certbot renew
 
 

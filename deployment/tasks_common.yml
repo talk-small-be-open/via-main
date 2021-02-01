@@ -49,6 +49,10 @@
       state: present
 
 
+  #
+  # Misc configurations
+  #
+  
   - name: Environment file
     become_user: root
     template:
@@ -57,6 +61,14 @@
       owner: root
       group: root
 
+  - name: logrotate config for seaside gems
+    become_user: root
+    template:
+      src: files/logrotate/via.j2
+      dest: /etc/logrotate.d/via
+      owner: root
+      group: root
+     
 
   #
   # User config
@@ -107,6 +119,7 @@
   - name: Install basic apt packages
     apt:
       name:
+        - 'logrotate'
         - 'ufw'
         - 'unattended-upgrades'
         - 'monit'
@@ -255,7 +268,14 @@
       dest: /etc/nginx/sites-enabled/default
       src: /etc/nginx/sites-available/default
       state: link
+  - name: maintenance page
+    template:
+      src: files/nginx/maintenance.vhost.j2
+      dest: /etc/nginx/sites-available/000_maintenance
+      owner: 'root'
+      group: 'root'
 
+      
   # See also https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker
   - name: install ngxblocker
     become_user: "root"
@@ -308,7 +328,7 @@
   - name: monitrc file
     register: monitconfig1
     copy:
-      src: files/monitrc
+      src: files/monit/monitrc
       dest: /etc/monit/monitrc
       owner: 'root'
       group: 'root'
@@ -318,7 +338,7 @@
   - name: monit config for via
     register: monitconfig2
     template:
-      src: files/monit_via.j2
+      src: files/monit/monit_via.j2
       dest: /etc/monit/conf.d/via
       owner: 'root'
       group: 'root'
@@ -465,6 +485,20 @@
       minute: "5"
       hour: "2"
       job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_tranlogs.sh"
+  - name: Cleanup old log files cron job
+    cron:
+      name: "Cleanup old log files of {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "10"
+      hour: "2"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_logs.sh"
+  - name: Cleanup old GemStone objectlog entries cron job
+    cron:
+      name: "Cleanup old GemStone objectlog entries of {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "15"
+      hour: "2"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_objectlog.sh {{stoneName}}"
 
 
 

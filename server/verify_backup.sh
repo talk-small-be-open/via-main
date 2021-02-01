@@ -20,7 +20,7 @@ BACKEND=$2
 # done
 
 # Ensure that the GemStone backup file is from today
-if test `find "$GS_HOME/server/stones/$STONE_NAME/backups/via_backup.dbf.gz" -newermt "12 hours ago"`
+if test `find "$GS_HOME/server/stones/$STONE_NAME/backups/via_backup.dbf.gz" -not -newermt "12 hours ago"`
 then
 		echo "via backup file seems too old!"
     exit -1

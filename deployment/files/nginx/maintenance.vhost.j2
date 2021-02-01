@@ -1,0 +1,15 @@
+server {
+
+		{% include 'listen_port.j2' %}
+
+    server_name _;
+
+    root {{via.installationPath}}/via_base/web_root;
+
+    location / {
+        return 503;
+    }
+
+		{% include 'error_handling.j2' %}
+        
+}

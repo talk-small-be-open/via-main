@@ -1,0 +1,27 @@
+/opt/GsDevKit_home/server/stones/{{stoneName}}/logs/seaside*.log {
+	copytruncate
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+}
+
+/opt/GsDevKit_home/server/stones/{{stoneName}}/logs/SeasideMaintenanceVM*.log {
+	copytruncate
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+}
+
+/opt/GsDevKit_home/server/stones/{{stoneName}}/logs/{{stoneName}}.log {
+	copytruncate
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+}
+

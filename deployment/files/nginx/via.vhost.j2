@@ -24,7 +24,7 @@
 						return 301 $scheme://$host/app;
 				}
 
-				{% for path in ['/app', '/via-admin'] -%}
+				{% for path in ['/app', '/via-admin', '/keepalive', '/ping'] -%}
 				# Speedup access to main app (Frontend and Backend)
 				location {{path}} {
 

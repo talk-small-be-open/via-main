@@ -1,19 +1,21 @@
-		# Reject access with just the IP. We do not want bots or other dark forces to annoy us
-		server {
-				listen 80 default_server;
+# Reject access with just the IP. We do not want bots or other dark forces to annoy us
+server {
+		listen 80 default_server;
+		listen [::]:80 default_server;
 
-				{% if via.useSsl %}
+		{% if via.useSsl %}
 				
-				listen 443 ssl http2 default_server;
+		listen 443 ssl http2 default_server;
+		listen [::]:443 ssl http2 default_server;
 
-				ssl_certificate /etc/letsencrypt/live/via/fullchain.pem;
-				ssl_certificate_key /etc/letsencrypt/live/via/privkey.pem;
-				include /etc/letsencrypt/options-ssl-nginx.conf;
-				ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+		ssl_certificate /etc/letsencrypt/live/via/fullchain.pem;
+		ssl_certificate_key /etc/letsencrypt/live/via/privkey.pem;
+		include /etc/letsencrypt/options-ssl-nginx.conf;
+		ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-				{% endif %}
+		{% endif %}
 
-				server_name _;
+		server_name _;
 
-				return 444; # Special code from nginx, just fails and does not return anything to caller
-		}
+		return 444; # Special code from nginx, just fails and does not return anything to caller
+}
