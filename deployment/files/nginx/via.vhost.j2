@@ -102,6 +102,14 @@
 						root /;
 				}
 
+
+				# TBD: Hide and secure
+				# or just use the CLI features, see https://sleeplessbeastie.eu/2020/01/29/how-to-use-haproxy-stats-socket/
+				location /ha-status {
+					  proxy_pass http://127.0.0.1:8404/stats;
+				}
+
+
 				{% include 'error_handling.j2' %}
 
 		}
@@ -137,7 +145,6 @@
 						{% include 'proxy_to_haproxy.j2' %}
 				}
 
-
 				{% include 'cached_locations.j2' %}
 
 				# General rule, serve static file or redirect to app
@@ -152,6 +159,7 @@
 
 
 				{% include 'error_handling.j2' %}
+
 
 		}
 		{% endif %}

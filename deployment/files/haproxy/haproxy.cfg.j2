@@ -53,6 +53,13 @@ frontend nginx
 		# https://gist.github.com/procrastinatio/6b6579230d99be5bfa26d04acd788e7a
 
 
+frontend stats
+    bind 127.0.0.1:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    # stats admin if LOCALHOST
+
 # # Pseudo backend to store rates
 # backend Abuse
 #     # stick-table type ip size 100K expire 30m store gpc0,http_req_rate(10s)

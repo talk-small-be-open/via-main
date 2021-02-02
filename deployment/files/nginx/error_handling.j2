@@ -1,3 +1,9 @@
 # Custom error page, if App is not running (looks nicer)
+error_page 500 /errors/500.html;
 error_page 502 /errors/502.html;
 error_page 503 /errors/503.html;
+error_page 504 /errors/503.html;
+
+location /errors/ {
+  internal;
+}
