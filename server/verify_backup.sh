@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # exit when any command fails
-set -e
+set -euxo pipefail
 
 STONE_NAME=$1
 BACKEND=$2

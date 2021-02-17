@@ -50,6 +50,7 @@
     shell: monit start via_gemstone_netldi
       
   - name: Do GemStone backup before deploy
+    when: skipBackup is not defined
     become_user: "{{remoteUser}}"
     shell: "todeBackup {{stoneName}} via_backup_before_deploy.dbf"
 
@@ -58,56 +59,54 @@
   #  - name: certbot renew
 
 
-  # Scheint nichts zu bringen?!
-  # Besser ist, weiter unten: mc revert Via ???
-  # - name: Flush Monticello cache
-  #   become_user: "{{remoteUser}}"
-  #   shell: "todeIt {{stoneName}} mr flush"
+  - name: Flush Monticello cache
+    become_user: "{{remoteUser}}"
+    shell: "todeIt {{stoneName}} mr flush"
 
 
   #
   # UPDATE TO NEWEST CODE IN VIA BASE
   # (Very strange, that we have to do that, since I thought Monticell would update subprojects as well?)
   #
-  - name: git-clone VIA base project
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} project clone --https --local --checkout=master Via"
-    args:
-      chdir: "/opt/GsDevKit_home"
-      creates: "/opt/GsDevKit_home/shared/repos/via"
+  # - name: git-clone VIA base project
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} project clone --https --local --checkout=master Via"
+  #   args:
+  #     chdir: "/opt/GsDevKit_home"
+  #     creates: "/opt/GsDevKit_home/shared/repos/via-base-src"
       
-  - name: Update VIA base project (pull)
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} project pull Via"
+  # - name: Update VIA base project (pull)
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} project pull Via"
 
-  - name: Update VIA base project (get)
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} project get Via"
+  # - name: Update VIA base project (get)
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} project get Via"
 
-  # Hack, GemStone weigert sich irgendwie zu updaten
-  - name: Monticello revert to last version (strange, why?)
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} mc revert {{item}}"
-    with_items:
-      - "Via"
-      - "Pillar-ExporterCore"
-      - "Pillar-ExporterHTML"
-      - "Pillar-ExporterPillar"
-      - "Pillar-Model"
-      - "ViaPlatformGemstone"
-      - "MCL-Utils-CollectionSugar"
+  # # Hack, GemStone weigert sich irgendwie zu updaten
+  # - name: Monticello revert to last version (strange, why?)
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} mc revert {{item}}"
+  #   with_items:
+  #     - "Via"
+  #     - "Pillar-ExporterCore"
+  #     - "Pillar-ExporterHTML"
+  #     - "Pillar-ExporterPillar"
+  #     - "Pillar-Model"
+  #     - "ViaPlatformGemstone"
+  #     - "MCL-Utils-CollectionSugar"
 
   
-  # - name: Load VIA site project
-  #   become_user: "{{remoteUser}}"
-  #   command:
-  #     argv:
-  #       - todeIt
-  #       - "{{stoneName}}"
-  #       - project
-  #       - load
-  #       - --loads="\`#('default')\`"
-  #       - "{{via.siteName}}"
+  # # - name: Load VIA site project
+  # #   become_user: "{{remoteUser}}"
+  # #   command:
+  # #     argv:
+  # #       - todeIt
+  # #       - "{{stoneName}}"
+  # #       - project
+  # #       - load
+  # #       - --loads="\`#('default')\`"
+  # #       - "{{via.siteName}}"
 
 
 
@@ -115,6 +114,9 @@
   #
   # UPDATE TO NEWEST CODE
   #
+
+# ??? MAYBE ensure the VIA base project is unlockes: todeIt project unlock Via
+
   - name: Update VIA site project information (pull)
     become_user: "{{remoteUser}}"
     shell: "todeIt {{stoneName}} project pull {{via.siteName}}"
@@ -146,11 +148,13 @@
       - "Pillar-Model"
       - "ViaPlatformGemstone"
       - "MCL-Utils-CollectionSugar"
+      - "MCL-Utils-Blankness"
+      - "{{via.siteName}}"
         
-  # Hack, GemStone weigert sich irgendwie zu updaten
-  - name: Monticello revert to last version (strange, why?) SITE
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} mc revert {{via.siteName}}"
+  # # Hack, GemStone weigert sich irgendwie zu updaten
+  # - name: Monticello revert to last version (strange, why?) SITE
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} mc revert {{via.siteName}}"
 
       
   - name: Update script inside VIA application

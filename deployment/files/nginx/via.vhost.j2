@@ -24,7 +24,7 @@
 						return 301 $scheme://$host/app;
 				}
 
-				{% for path in ['/app', '/via-admin', '/keepalive', '/ping'] -%}
+				{% for path in ['/app', '/via-admin'] -%}
 				# Speedup access to main app (Frontend and Backend)
 				location {{path}} {
 
@@ -39,6 +39,15 @@
 						{% include 'proxy_to_haproxy.j2' %}
 				}
 				{% endfor %}
+
+
+				{% for path in ['/keepalive', '/ping'] -%}
+				# Speedup access to some services (no auth, no bandwith)
+				location {{path}} {
+						{% include 'proxy_to_haproxy.j2' %}
+				}
+				{% endfor %}
+
 
 				# Control access to demo app
 				# See https://docs.nginx.com/nginx/admin-guide/security-controls/controlling-access-proxied-http/#limit_req

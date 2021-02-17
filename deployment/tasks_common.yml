@@ -491,7 +491,7 @@
       user: "{{remoteUser}}"
       minute: "10"
       hour: "2"
-      job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_logs.sh"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_logfiles.sh"
   - name: Cleanup old GemStone objectlog entries cron job
     cron:
       name: "Cleanup old GemStone objectlog entries of {{stoneName}}"

@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euxo pipefail
+
 cd ~/stone/logs
 
 # Delete log files, which have not been written to, since a while

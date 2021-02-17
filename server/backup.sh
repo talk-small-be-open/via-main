@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 
 # Usage backup.sh stoneName duplicityTarget
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euxo pipefail
+
 cd ~/stone/tranlogs
 
 # Keep the newest 4 tranlogs (=> +5)

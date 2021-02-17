@@ -1,15 +1,19 @@
 // Development LESS styles
 
+body.development {
+		div.wa-toolbar {
+				opacity: 0.1;
+
+				&:hover {
+						opacity: 1;
+				}
+		}
+}
+
+
 // Not small phones
 @media (min-width: @breakpoint-small) {
 
-		body.development {
-				.footer {
-						// Wegen seaside panel
-						margin-bottom: 25px;
-				}
-
-		}
 
 }
 
@@ -17,16 +21,11 @@
 @media (max-width: @breakpoint-small) {
 
 		// DEV
-		div.wa-toolbar {
-				display: none;
-//				position: relative;
-		}
+		// div.wa-toolbar {
+		// 		display: none;
+		// }
 
 
 }
 
 
-// Emacs!! Am Ende der Datei stehen lassen!
-// Local Variables:
-// less-css-compile-at-save: t
-// End:
