@@ -149,6 +149,7 @@
         - 'lnav'
         - 'coturn'
         - 'mailutils' # for ngxblocker to send emails
+        - 'jmeter' # for integration tests
       state: present
 
       
@@ -499,6 +500,14 @@
       minute: "15"
       hour: "2"
       job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_objectlog.sh {{stoneName}}"
+  - name: Run integration tests
+    when: via.integrationTest is defined
+    cron:
+      name: "Run integration tests of {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "1"
+      hour: "6,12,18"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./run_integration_tests.sh {{via.appDomains[0]}} {{via.integrationTest.userEmail}} {{via.integrationTest.userPassword}}"
 
 
 
