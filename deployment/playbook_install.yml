@@ -64,9 +64,9 @@
       group: "{{remoteUser}}"
       mode: 0644
 
-  - name: Add apt repo for certbot
-    apt_repository:
-      repo: ppa:certbot/certbot
+  #new as snap recommended - name: Add apt repo for certbot
+  #   apt_repository:
+  #     repo: ppa:certbot/certbot
       
   - name: apt packages update
     apt:
@@ -116,8 +116,8 @@
   #
   - name: nginx package
     apt: pkg=nginx
-  - name: nginx certbot plugin
-    apt: pkg=python-certbot-nginx
+  # - name: nginx certbot plugin
+  #   apt: pkg=python-certbot-nginx
   - name: User {{remoteUser}} is in group www-data (uploaded files permission)
     user:
       name: "{{remoteUser}}"
@@ -156,7 +156,7 @@
     when: via.useSsl
     shell: certbot --standalone -n --agree-tos --email {{via.adminEmail}} --cert-name "via"  --domains "{{via.appDomains|join(',')}}" --domains "{{via.portalDomains|join(',')}}" certonly
     args:
-      creates: "/etc/letsencrypt/live/{{via.appDomain}}/fullchain.pem"
+      creates: "/etc/letsencrypt/live/via/fullchain.pem"
 
   #
   # GemStone GsDevKit

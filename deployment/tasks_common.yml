@@ -184,7 +184,10 @@
   #     name:
   #       - pdftk
     
-
+  - name: Install certbot snap (recommended instead apt package)
+    snap:
+      classic: yes
+      name: certbot
 
   # PHP (NGINX Upload helper)
   - name: PHP for nginx
@@ -420,7 +423,7 @@
       minute: "1"
       hour: "1"
       weekday: "0"
-      job: "cronic certbot --nginx renew"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./renew_certificates.sh"
   - name: "cron: ngxblocker updates"
     cron:
       name: ngxblocker update
