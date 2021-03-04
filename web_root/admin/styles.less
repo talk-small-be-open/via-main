@@ -225,11 +225,23 @@ div.clozeTextPlaceholderEditor {
 }
 
 div.VIAAdminModulesComponent {
+		form.searchForm {
+				label {
+						display: inline;
+				}
+		}
+		
 		table.adminModules {
 				width: 100%;
 
 				td.taskName {
 						//padding-left: 25px;
+						span.matchesSearch {
+								// @pad: 0.1em;
+								background-color: lightgreen;
+								// padding: 0 @pad;
+								// margin: 0 -@pad;
+						}
 				}
 
 				tr.tasksBottom td {
