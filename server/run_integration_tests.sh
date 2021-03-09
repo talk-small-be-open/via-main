@@ -12,7 +12,7 @@ rm -f integration_test_details.log
 # Run JMeter
 jmeter -n -Jhostname=$1 -Jemail=$2 -Jmagicspell=$3 -t ./integration_test.jmx   &> /dev/null
 
-# Check if success
+# Check if success, poor man solution
 if grep -q ",false," integration_test.log; then
 		echo "Integration tests fail:"
 		cat integration_test.log
