@@ -17,10 +17,6 @@ db
 "Enable/Disable seaside development tools"
 (WAAdmin respondsTo: #developmentToolsEnabled) ifTrue: [
 	VIAApplicationManager removeDevelopmentSeasideComponents.
-
-{% if via.isBeta %}
-	WAAdmin developmentToolsEnabled ifFalse: [ WAAdmin enableDevelopmentTools ].
-{% else %}
 	WAAdmin developmentToolsEnabled ifTrue: [ WAAdmin disableDevelopmentTools ].
-{% endif %}
+
 ].

@@ -101,6 +101,10 @@
   #
   # hosts file
   #
+  - name: Set the systems hostname
+    ansible.builtin.hostname:
+      name: "{{inventory_hostname}}"
+    
   - name: local via domain in hosts file
     lineinfile:
       path: /etc/hosts
@@ -110,6 +114,10 @@
     lineinfile:
       path: /etc/hosts
       line: "127.0.0.1 {{ansible_hostname}}"
+  - name: Ensure hostname is resolved in hosts file
+    lineinfile:
+      path: /etc/hosts
+      line: "127.0.0.1 {{inventory_hostname}}"
 
 
   #
@@ -185,6 +193,7 @@
   #       - pdftk
     
   - name: Install certbot snap (recommended instead apt package)
+    ignore_errors: yes
     snap:
       classic: yes
       name: certbot
@@ -431,8 +440,9 @@
       minute: "0"
       hour: "22"
       weekday: "*"
-#      job: "cronic /usr/local/sbin/update-ngxblocker -e {{via.adminEmail}}"
-      job: "/usr/local/sbin/update-ngxblocker -e {{via.adminEmail}}"
+      # [ -n ] : Do not send email report      (default: N)
+      # [ -o ] : Only send email on update     (default: N)
+      job: "/usr/local/sbin/update-ngxblocker -q -e {{via.adminEmail}}"
     
 # TODO Deactivate cronjob from apt package certbot
 # Deactivate systemd timer (systemctl show certbot.timer)

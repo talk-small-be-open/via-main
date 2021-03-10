@@ -157,7 +157,7 @@ function p2pGetConnection(elementId, otherPeerId) {
 		}
 	});
 
-	return promiseTimeout(10000, promise);
+	return promiseTimeout(30000, promise);
 }
 
 // Save an existing connection
