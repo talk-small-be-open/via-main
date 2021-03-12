@@ -157,7 +157,7 @@ function p2pGetConnection(elementId, otherPeerId) {
 		}
 	});
 
-	return promiseTimeout(30000, promise);
+	return promiseTimeout(60000, promise);
 }
 
 // Save an existing connection
@@ -173,6 +173,6 @@ function p2pSend(elementId, otherPeerId, data) {
 		conn.send(data);
 	}).catch((error)=>{
 		console.log("P2P error" + error);
-		alert('Error while communicating to paired user: ' + error)
+//		alert('Error while communicating to paired user: ' + error)
 	})
 }
