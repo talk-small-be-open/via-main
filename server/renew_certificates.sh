@@ -2,6 +2,6 @@
 
 # set -e
 
-service nginx stop && certbot --standalone renew
+service nginx stop && /snap/bin/certbot --standalone renew
 
 service nginx start

@@ -78,17 +78,25 @@ function p2pOnData(elementId, data, connection, callback) {
 
 	console.log("P2P Received", data);
 
+	// Ignore "no data"
+	if (data == null) { return }
+	if (data == '') { return }
+	if (typeof data == 'undefined') { return }
+
+	// Direct handling for connection ping protocol
 	if (data == 'ping') {
 		connection.send('pong');
 		return;
 	}
 
+	// Direct handling for connection ping protocol
 	if (data == 'pong') {
 		$(element).animate({opacity: 0.4}, 1000);
 		$(element).animate({opacity: 1}, 1000);
 		return;
 	}
 
+	// Really handling the data with the given callback
 	if (callback) {
 		callback(data);
 	}
