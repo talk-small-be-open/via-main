@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -eo pipefail
 
 cd ~/stone/logs
 

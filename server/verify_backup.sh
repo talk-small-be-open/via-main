@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # exit when any command fails
-set -euxo pipefail
+set -euo pipefail
 
 STONE_NAME=$1
-BACKEND=$2
+BACKEND=${2:-}
 
 #VERBOSE=false
 # while getopts "v" opt; do
