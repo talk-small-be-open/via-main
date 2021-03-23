@@ -1,4 +1,4 @@
-set alert {{via.adminEmail}}
+set alert {{via.adminEmail}} not on { instance, action }
 
 # STONE
 check process via_gemstone_stone matching "^/opt/.*/sys/stoned {{stoneName}} .*$"
