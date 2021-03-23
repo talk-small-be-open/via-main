@@ -7,7 +7,9 @@ STONE_NAME=$1
 
 
 # Get credentials for duplicity, if any
-source "/opt/via/.duplicity.cred"
+if [ -f "/opt/via/.duplicity.cred" ]; then
+		source "/opt/via/.duplicity.cred"
+fi
 
 #
 # Run duplicity

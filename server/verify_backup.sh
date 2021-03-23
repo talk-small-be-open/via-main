@@ -27,7 +27,9 @@ then
 fi
 
 # Get credentials for duplicity, if any
-source "/opt/via/.duplicity.cred"
+if [ -f "/opt/via/.duplicity.cred" ]; then
+		source "/opt/via/.duplicity.cred"
+fi
 
 # Verify the GemStone DB
 TARGET=$BACKEND/via_db

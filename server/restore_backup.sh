@@ -12,7 +12,9 @@ BACKEND=$2
 # mkdir -f $BACKUP_FOLDER
 
 # Get credentials for duplicity, if any
-source "/opt/via/.duplicity.cred"
+if [ -f "/opt/via/.duplicity.cred" ]; then
+		source "/opt/via/.duplicity.cred"
+fi
 
 # Maybe ask for name of backup? Take latest
 

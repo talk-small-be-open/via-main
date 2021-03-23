@@ -10,7 +10,7 @@ rm -f integration_test.log
 rm -f integration_test_details.log
 
 # Run JMeter
-jmeter -n -Jhostname=$1 -Jemail=$2 -Jmagicspell=$3 -t ./integration_test.jmx   &> /dev/null
+/opt/jmeter/bin/jmeter -n -Jhostname=$1 -Jemail=$2 -Jmagicspell=$3 -t ./integration_test.jmx   &> /dev/null
 
 # Check if success, poor man solution
 if grep -q ",false," integration_test.log; then
