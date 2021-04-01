@@ -1,6 +1,9 @@
 /* VIA Admin styles */
 
 
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
+
+
 // ======================================================
 // Mixins
 // ======================================================
@@ -235,6 +238,13 @@ div.VIAAdminModulesComponent {
 		table.adminModules {
 				width: 100%;
 
+				tr {
+						&:hover {
+								background-color: #eee;
+						}
+				}
+
+				
 				td.taskName {
 						//padding-left: 25px;
 						span.matchesSearch {
@@ -301,6 +311,12 @@ div.VIAAdminAssetsComponent, div.VIAAdminAssetsUsageComponent {
 		table.adminAssets {
 				width: 100%;
 
+				tr.VIADocumentAsset {
+						div.zoomBox {
+								margin-top: 0.5em;
+								border: 1px solid black;
+						}
+				}
 				// td.preview {
 				// 		im.
 				// }
@@ -333,71 +349,6 @@ div.extraTools {
 }
 
 
-ul.taskBricks {
-		list-style: none;
-
-		@tallness: 80px;
-		
-		li.taskChild {
-				@childPadding: 5px;
-				//				cursor: move;
-				background-color: white;
-				border: 1px solid black;
-				padding: @childPadding;
-				margin: 10px 0;
-				//min-height: @tallness;
-				margin-left: 20px;
-				position: relative;
-
-				&.VIADivider {
-						background-color: #999;
-				}
-
-
-				div.taskBrickHandle {
-						
-						font-size: 90%;
-						text-transform: uppercase;
-						cursor: move;
-						white-space: nowrap;
-						position: absolute;
-						//left: -30px;
-						//top: -@childPadding;
-						background-color: #eee;
-						color: black;
-						border: 1px solid #ccc;
-						padding: 3px 1px;
-
-						transform: rotate(-180deg) translate(25px, @childPadding);
-						transform-origin: 50% 50%;
-						writing-mode: vertical-lr;
-
-						button.deleteButton {
-								color: #1EAEDB;
-								font-size: 15px;
-								border: none;
-								padding: 0 0px;
-								margin: 0;
-								display: inline;
-								line-height: 1em;
-								height: 1em;
-								vertical-align: bottom;
-						}
-				}
-
-				
-				textarea {
-						width: 100%;
-						// min-height: 80px;
-				}
-
-				&.insertPlaceholder {
-						background-color: lightgreen;
-						opacity: 0.4;
-				}
-
-		}
-}
 
 div.main {
 		margin-top: 10px;
@@ -495,53 +446,195 @@ div.taskEditor {
 				margin: 0.5em 0;
 		}
 
-		li.taskChild {
+		div.header {
+				margin-top: 1em;
+				
+				input.title, input.subtitle {
+						width: 100%;
+				}
+		}
+		
 
-				// top level
-				> div.inputEditor {
 
-						// nesting level 1
-						> div.inputEditor {
-								border: 1px dotted #333;
-								background-color: #f3f3f3;
-								padding: 5px;
-								margin: 0.5em 0 2em 0;
 
-								// nesting level 2
-								> div.inputEditor {
-										border-top: 1px dotted #333;
-										//border-bottom: 1px dotted #333;
-										padding: 5px 0;
-										margin: 5px 0 10px 0;
-								}
+		// TODO: Oben rein bei editor?
+		ul.taskBricks {
+				list-style: none;
 
-						}
+				@tallness: 80px;
+				
+				li.taskChild {
+						@childPadding: 5px;
+						//				cursor: move;
+						background-color: white;
+						border: 1px solid black;
+						padding: @childPadding;
+						margin: 10px 0;
+						//min-height: @tallness;
+						margin-left: 20px;
+						position: relative;
 
-						h1 {
+
+						input[type=text], textarea {
+								font-family: 'Source Code Pro', monospace;
 								font-size: 1.5rem;
-								font-weight: bold;
+								max-width: 100%;
 						}
 
-						h2 {
-								font-size: 1.3rem;		
-								font-weight: bold;
-						}
+						// all levels
+						div.inputEditor {
+								select.uiStyleSelect {
+										font-size: 50%;
+										line-height: 50%;
+										height: 1em;
+								}
 
-						h3 {
-								font-size: 1.1rem;		
-								font-weight: bold;
-						}
-
-						div.videoTimingTools {
-								.noUserSelect();
-								a {
-										.clickAction();
-										margin-right: 1em;
+								div.VIAHighlightArea {
+										input[type=text] {
+												width: 100%;
+										}
 								}
 						}
+
+						// top level
+						> div.inputEditor {
+
+								// nesting level 1
+								> div.inputEditor {
+										border: 1px dotted #333;
+										background-color: #f3f3f3;
+										padding: 5px;
+										margin: 0.5em 0 1em 0;
+
+										// nesting level 2
+										> div.inputEditor {
+												border-top: 1px dotted #333;
+												//border-bottom: 1px dotted #333;
+												padding: 5px 0;
+												margin: 5px 0 10px 0;
+										}
+
+								}
+
+								h1 {
+										font-size: 1.5rem;
+										font-weight: bold;
+								}
+
+								h2 {
+										font-size: 1.3rem;		
+										font-weight: bold;
+								}
+
+								h3 {
+										font-size: 1.1rem;		
+										font-weight: bold;
+								}
+
+								div.videoTimingTools {
+										.noUserSelect();
+										a {
+												.clickAction();
+												margin-right: 1em;
+										}
+								}
+						}
+
+
+						
+						&.VIADivider {
+								background-color: #999;
+						}
+
+						&.VIAFileDownloader {
+								div.downloadPreview {								
+										width:100px;
+										height:auto;
+										margin-bottom:5px;
+
+										div.zoomBox {
+												border: 1px solid #eee;
+										}
+
+								}
+						}
+
+						&.VIAAudioPlayer {
+								audio {
+										display: block;
+										width: 75%;
+										margin-bottom: 0.5em;
+								}
+						}
+
+						
+
+						// &.VIAPillarSnippet {
+						// 		div.pillarInput {
+						// 				width: 72em;
+						// 		}
+						// }
+
+						div.taskBrickHandle {
+								
+								font-size: 90%;
+								text-transform: uppercase;
+								cursor: move;
+								white-space: nowrap;
+								position: absolute;
+								//left: -30px;
+								//top: -@childPadding;
+								background-color: #eee;
+								color: black;
+								border: 1px solid #ccc;
+								padding: 3px 1px;
+
+								transform: rotate(-180deg) translate(25px, @childPadding);
+								transform-origin: 50% 50%;
+								writing-mode: vertical-lr;
+
+								button.deleteButton {
+										color: #1EAEDB;
+										font-size: 15px;
+										border: none;
+										padding: 0 0px;
+										margin: 0;
+										display: inline;
+										line-height: 1em;
+										height: 1em;
+										vertical-align: bottom;
+								}
+						}
+
+						
+						textarea {
+								width: 100%;
+								// min-height: 80px;
+
+								&.hint {
+										width: 18em;
+								}
+						}
+
+						&.insertPlaceholder {
+								background-color: lightgreen;
+								opacity: 0.4;
+						}
+
 				}
 		}
 
+
+
+
+
+
+
+
+
+
+
+		
 		div.buttonBar {
 				position: sticky;
 				bottom: 0;
@@ -561,7 +654,7 @@ div.taskEditor {
 div.pillarInput {
 
 		// margin-bottom: 5px;
-		max-width: 60em;
+		max-width: 72em;
 		
 		textarea.pillar {
 				// width: 600px;
@@ -625,6 +718,7 @@ label {
 
 		&.inline {
 				display: inline;
+				vertical-align: top;
 		}
 		
 		span.help {
@@ -771,6 +865,11 @@ div.VIAAdminUiTextComponent {
 						}
 				}
 		}
+}
+
+div.pillarParagraph {
+		margin-top: 0.5em;
+		margin-bottom: 0.5em;
 }
 
 // ======================================================

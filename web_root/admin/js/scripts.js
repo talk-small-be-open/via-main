@@ -281,5 +281,18 @@ $(document).ready(function(){
 //	$(window).on('scroll', debounce(lazyLoad, 20, false));
 	$(window).on('scroll', lazyLoad);
 
+	// $('select.select2').select2({
+	// 	theme: 'classic',
+	// 	placeholder: {id: '1', text: 'leer'},
+	// 	allowClear: true,
+	// });
+
+	$('select.selectize').selectize({
+//		create: true,
+    sortField: 'text',
+		// showEmptyOptionInDropdown: true,
+		// emptyOptionLabel: 'leer',
+		// allowEmptyOption: false
+	});
 	
 });
