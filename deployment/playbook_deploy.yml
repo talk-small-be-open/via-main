@@ -54,7 +54,9 @@
     become_user: "{{remoteUser}}"
     shell: "todeBackup {{stoneName}} via_backup_before_deploy.dbf"
 
-# TODO Check if backup sucessful?
+# TODO 1. Do not overwrite! 2. Check if backup sucessful?
+
+
   
   #  - name: certbot renew
 

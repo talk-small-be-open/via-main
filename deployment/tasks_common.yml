@@ -157,7 +157,9 @@
         - 'lnav'
         - 'coturn'
         - 'mailutils' # for ngxblocker to send emails
-        - 'jmeter' # for integration tests
+#        - 'jmeter' # for integration tests
+        - 'openjdk-11-jre' # for jmeter (jmeter from apt is outdated)
+#         - 's3cmd' # For S3backup
       state: present
 
       
@@ -442,7 +444,8 @@
       weekday: "*"
       # [ -n ] : Do not send email report      (default: N)
       # [ -o ] : Only send email on update     (default: N)
-      job: "/usr/local/sbin/update-ngxblocker -q -e {{via.adminEmail}}"
+      #job: "/usr/local/sbin/update-ngxblocker -n -q -e {{via.adminEmail}}"
+      job: "cronic /usr/local/sbin/update-ngxblocker -n -q"
     
 # TODO Deactivate cronjob from apt package certbot
 # Deactivate systemd timer (systemctl show certbot.timer)
@@ -556,7 +559,25 @@
       line: "TURNSERVER_ENABLED=1"
     notify:
       - restart coturn
-    
+
+  #    
+  # JMeter
+  # 
+  - name: Create JMeter folder
+    file:
+      path: "/opt/jmeter"
+      state: directory
+      owner: "{{remoteUser}}"
+      group: "{{remoteUser}}"
+
+  - name: install JMeter
+    shell:
+      warn: false
+      cmd: |
+        curl https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.4.1.tgz | tar -C /opt/jmeter --strip-components=1 -xz
+    args:
+      creates: "/opt/jmeter/bin/jmeter"
+
 
   #
   # GemStone configuration
