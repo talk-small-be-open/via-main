@@ -306,3 +306,47 @@ div.VIACaptchaComponent {
 				box-sizing: border-box;
 		}
 }
+
+div.frontendAdminTools {
+		position: fixed;
+		right: 2em;
+		bottom: 5px;
+		font-size: 0.75rem;
+		line-height: 0.75rem;
+		z-index: 1000000;
+
+		a {
+				&:hover {
+						background: black;
+						color: white;
+				}
+		}
+}
+
+div.frontendAdminTool {
+		font-size: 0.75rem;
+		line-height: 1em;
+		width: 100%;
+		position: fixed;
+		bottom: 0;
+		z-index: 999999;
+		background-color: yellow;
+		max-height: 2rem;
+		overflow: scroll;
+		border-top: 2px solid black;
+		opacity: 0.3;
+
+		> * {
+				visibility: hidden;
+		}
+
+		&:hover {
+				max-height: 33vh;
+				opacity: 1;
+				> * {
+						visibility: visible;
+				}
+		}
+
+
+}
