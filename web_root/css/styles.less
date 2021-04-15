@@ -331,19 +331,26 @@ div.frontendAdminTool {
 		bottom: 0;
 		z-index: 999999;
 		background-color: yellow;
-		max-height: 2rem;
+		max-height: 1.5rem;
 		overflow: scroll;
 		border-top: 2px solid black;
 		opacity: 0.3;
+		padding: 0.5em;
 
-		> * {
+		div.title {
+				font-weight: bold;
+				margin-bottom: 0.5em;
+		}
+
+		div.tool {
 				visibility: hidden;
 		}
+
 
 		&:hover {
 				max-height: 33vh;
 				opacity: 1;
-				> * {
+				div.tool {
 						visibility: visible;
 				}
 		}
