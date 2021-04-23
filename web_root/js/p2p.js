@@ -1,5 +1,5 @@
 //
-// VIA Javascript Library (Frontend & Backend)
+// VIA Javascript Library for P2P components, see classes VIAP2p...
 //
 // Remark: Try to be plain Javascript, since we defer load all the other libraries
 // like jQuery etc., or be sure that those functions are not called early.
@@ -13,10 +13,10 @@
 
 var p2pPeers = {};
 var p2pConnections = {};
+var p2pDebug = true;
 
 function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
-	// p2pPeers = {};
-	// p2pConnections = {};
+	const element = document.getElementById(elementId);
 
 	var openPeer = new Promise( (resolve, reject) => {
 		var peerOptions = {
@@ -24,7 +24,7 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 			port: 443,
 			path: "/peerjs",
 			secure: true,
-			debug: 0,
+			debug: (p2pDebug ? 3 : 0),
 			pingInterval: 2000,
 		};
 
@@ -36,47 +36,54 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 		}
 		
 	  var peer = new Peer(myPeerId, peerOptions);
-												 
-		var element = document.getElementById(elementId);
-	
+		
 	  peer.on("open", function(id) {
-			console.log("P2P My peer ID is: " + id);
+			p2pLog("My peer ID is: " + id);
 			resolve(peer);
 			element.classList.add('open');
 		});
 
 	  peer.on("error", function(error) {
-			console.log("P2P Peer error " + error);
-			reject("Could not connect to peer server: "+error);
-			element.classList.add('error');
+			p2pStatusError(element, "Peer error: " + error.type + ' ' + error);
+			reject("Could not connect to peer server: " + error);
 		});
 
 		// On incoming connection
 	  peer.on("connection", function(c) {
-			console.log("P2P Incoming connection!");
-			p2pSetConnection(elementId, c.peer, c);
+			p2pLog("Incoming connection!");
+			p2pSetConnection(element, c.peer, c);
 
 			c.on("error", function(error) {
-				console.log("P2P Connection error ", error);
-				element.classList.add('error');
+				p2pStatusError(element, "Connection:  " + error);
 			});
 
-			c.on("data", function(data){p2pOnData(elementId, data, c, onDataFunction)});
+			c.on("data", function(data){ p2pOnData(element, data, c, onDataFunction) });
+
+			p2pSend(elementId, c.peer, 'ping');
 		});
 
+
+		// On disconnection
+	  peer.on("disconnected", function(c) {
+			p2pLog("Peer server disconnected");
+			// peer.reconnect(); // Makes sense?
+		});
+		
 	});
 
-	p2pPeers[elementId] = openPeer;
+	p2pPeers[element.id] = openPeer;
 
 	return openPeer;
 }
 
-function p2pOnData(elementId, data, connection, callback) {
-	var element = document.getElementById(elementId);
-	element.classList.remove('error');
-	element.classList.add('data');
 
-	console.log("P2P Received", data);
+// on data handler
+function p2pOnData(element, data, connection, callback) {
+//	var element = document.getElementById(elementId);
+	p2pStatusOk(element);
+	element.classList.add('data');
+	
+	p2pLog("Received " + data);
 
 	// Ignore "no data"
 	if (data == null) { return }
@@ -85,7 +92,7 @@ function p2pOnData(elementId, data, connection, callback) {
 
 	// Direct handling for connection ping protocol
 	if (data == 'ping') {
-		connection.send('pong');
+		p2pSendWithConnection(connection, 'pong');
 		return;
 	}
 
@@ -96,48 +103,54 @@ function p2pOnData(elementId, data, connection, callback) {
 		return;
 	}
 
+	// Direct handling for done signal
+	if (data == 'done') {
+		$(element).animate({opacity: 0.1}, 100);
+		$(element).animate({opacity: 1}, 100);
+		return;
+	}
+
 	// Really handling the data with the given callback
 	if (callback) {
 		callback(data);
+		p2pSendWithConnection(connection, 'done');
 	}
 }
 
 
+// Called by the seaside component VIAP2p...
 function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null, sendOnConnect = null, turnConfig = {}) {
 	return p2pInit(elementId, myPeerId, onDataFunction, turnConfig).then(peer => {
 
 		if (otherPeerId) {
-			console.log('P2P Trying to contact', otherPeerId);
-			return p2pGetConnection(elementId, otherPeerId).then(conn => {
-				var element = document.getElementById(elementId);
+			p2pLog('P2P Trying to contact ' + otherPeerId);
+			const element = document.getElementById(elementId);
+			return p2pGetConnection(element, otherPeerId).then(conn => {
 
-				conn.on("data", function(data){p2pOnData(elementId, data, conn, onDataFunction)});
+				conn.on("data", function(data){p2pOnData(element, data, conn, onDataFunction)});
 
 				conn.on("error", function(error) {
-					console.log("P2P Connection error ", error);
-					element.classList.add('error');
+					p2pStatusError(element, "Connection: " + error);
 					// remove cache, so its recreated
-					p2pSetConnection(elementId, otherPeerId, null);
+					p2pSetConnection(element, otherPeerId, null);
 				});
 
 				if (sendOnConnect) {
-					conn.send(sendOnConnect);
+					p2pSendWithConnection(conn, sendOnConnect);
 				}
 
 				return conn;
-			// }).catch((error)=>{
-			// 	console.log("P2P error" + error);
-			// 	alert('Error while communicating to paired user: ' + error)
+			}).catch((error)=>{
+				p2pStatusError(element, 'Error while communicating to paired user: ' + error);
 			})
 		}
 	})
 }
-		
+
 // Get a connection object, which we have tracked, or generate a new
-function p2pGetConnection(elementId, otherPeerId) {
+function p2pGetConnection(element, otherPeerId) {
 	var promise = new Promise( (resolve, reject) => {
-		const element = document.getElementById(elementId);
-		const connectionId = 'p2p_' + elementId + '_' + otherPeerId;	
+		const connectionId = 'p2p_' + element.id + '_' + otherPeerId;	
 		var conn = p2pConnections[connectionId];
 
 		if (conn) {
@@ -151,16 +164,22 @@ function p2pGetConnection(elementId, otherPeerId) {
 			}
 		}
 		else {
-			const openPeer = p2pPeers[elementId];
+			const openPeer = p2pPeers[element.id];
 
 			openPeer.then(peer => {
+				p2pLog("Outgoing connection created");
 				conn = peer.connect(otherPeerId, {reliable: true});
-				console.log("P2P Outgoing connection created");
 				conn.on("open", function() {
-					console.log("P2P Outgoing connection opened");
-					p2pSetConnection(elementId, otherPeerId, conn);
+					p2pLog("Outgoing connection opened");
 					resolve(conn);
-				})
+				});
+				conn.on("error", function() {
+					reject();
+				});
+
+				p2pSetConnection(element, otherPeerId, conn);
+
+				
 			});
 		}
 	});
@@ -169,18 +188,61 @@ function p2pGetConnection(elementId, otherPeerId) {
 }
 
 // Save an existing connection
-function p2pSetConnection(elementId, otherPeerId, connection) {
-	const connectionId = 'p2p_' + elementId + '_' + otherPeerId;	
+function p2pSetConnection(element, otherPeerId, connection) {
+	const connectionId = 'p2p_' + element.id + '_' + otherPeerId;
+	// Delete old, if any
+	if (p2pConnections[connectionId]) {
+		p2pLog('Exchanging existing connection');
+		p2pConnections[connectionId].close();
+	}
+	
 	p2pConnections[connectionId] = connection;
 }
 
+function p2pSendWithConnection(connection, data) {
+	p2pLog("Sending " + data);
+	connection.send(data);
+}
 
 function p2pSend(elementId, otherPeerId, data) {
-	p2pGetConnection(elementId, otherPeerId).then(conn => {
-		console.log("P2P sending " + data);
-		conn.send(data);
+	const element = document.getElementById(elementId);
+
+	p2pGetConnection(element, otherPeerId).then(conn => {
+		p2pSendWithConnection(conn, data);
 	}).catch((error)=>{
-		console.log("P2P error" + error);
-//		alert('Error while communicating to paired user: ' + error)
+//		const element = document.getElementById(elementId);
+		p2pStatusError(element, "Send: " + error);
+		//		alert('Error while communicating to paired user: ' + error)
 	})
+}
+
+function p2pLog(message) {
+	if (p2pDebug) {
+		console.log('P2P', message);
+	}
+}
+
+function p2pLogError(element, message) {
+	const logContainer = element.querySelector('span.p2pMessages');
+	const span = document.createElement('span');
+
+	p2pLog(message);
+	
+	span.appendChild(document.createTextNode(message + ' '));
+	logContainer.appendChild(span);
+}
+
+function p2pClearLog(element) {
+	const logContainer = element.querySelector('span.p2pMessages');
+	logContainer.innerHTML = '';
+}
+
+function p2pStatusError(element, message) {
+	element.classList.add('error');
+	p2pLogError(element, message);
+}
+
+function p2pStatusOk(element) {
+	element.classList.remove('error');
+	p2pClearLog(element);
 }
