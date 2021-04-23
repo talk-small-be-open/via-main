@@ -199,9 +199,17 @@ function p2pSetConnection(element, otherPeerId, connection) {
 	p2pConnections[connectionId] = connection;
 }
 
+//var p2pKeepaliveTimer;
 function p2pSendWithConnection(connection, data) {
 	p2pLog("Sending " + data);
 	connection.send(data);
+
+	// // Keepalive timer
+	// if (data != 'ping') {
+	// 	clearInterval(p2pKeepaliveTimer);
+	// 	p2pKeepaliveTimer = setInterval(function(){p2pSendWithConnection(connection, 'ping')}, 5000);
+	// }
+
 }
 
 function p2pSend(elementId, otherPeerId, data) {
