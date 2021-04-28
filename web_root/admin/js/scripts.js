@@ -287,9 +287,10 @@ $(document).ready(function(){
 	// 	allowClear: true,
 	// });
 
+	// See https://selectize.github.io/selectize.js/
 	$('select.selectize').selectize({
 //		create: true,
-    sortField: 'text',
+//    sortField: 'text',
 		// showEmptyOptionInDropdown: true,
 		// emptyOptionLabel: 'leer',
 		// allowEmptyOption: false
