@@ -27,7 +27,7 @@ wait 20
 echo "Waiting until no topaz processes exists anymore ..."
 while pgrep topaz  > /dev/null; do sleep 1; echo -n "."; done
 
-# TODO! object log leeren, oder zumindest die alten sachen!!!
+# object log leeren, oder zumindest die alten sachen!!!
 todeIt $STONE "ol clear --age=\`1 day\`" > $LOGFILE
 
 # GS Mark for collection

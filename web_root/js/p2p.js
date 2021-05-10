@@ -13,7 +13,7 @@
 
 var p2pPeers = {};
 var p2pConnections = {};
-var p2pDebug = true;
+var p2pDebug = false;
 
 function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 	const element = document.getElementById(elementId);
@@ -145,6 +145,10 @@ function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null
 			})
 		}
 	})
+}
+
+function p2pStop(elementId, otherPeerId) {
+	p2pSetConnection(element, otherPeerId, null)
 }
 
 // Get a connection object, which we have tracked, or generate a new

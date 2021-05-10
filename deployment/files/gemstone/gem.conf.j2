@@ -5,10 +5,13 @@
 
 # SHR_PAGE_CACHE_SIZE_KB should always be > GEM_TEMPOBJ_CACHE_SIZE
 # Problems with limited license key. Could not get 2G of shared. SHR_PAGE_CACHE_SIZE_KB = 2000000;
-SHR_PAGE_CACHE_SIZE_KB = 1500000;
-GEM_TEMPOBJ_CACHE_SIZE = 500000;
 {% if via.gemStone.keyfile is defined %}
 KEYFILE = {{via.installationPath}}/install/gemstone.key;
+SHR_PAGE_CACHE_SIZE_KB = 2GB;
+GEM_TEMPOBJ_CACHE_SIZE = 300MB;
+{% else %}
+SHR_PAGE_CACHE_SIZE_KB = 1GB;
+GEM_TEMPOBJ_CACHE_SIZE = 300MB;
 {% endif %}
 
 STN_TRAN_FULL_LOGGING = TRUE;

@@ -11,3 +11,16 @@
 		padding: 0px 4px;
 		background-color: transparent;
 }
+
+.clearfix() {
+		&::before {
+				content: "";
+				display: table-cell;
+		}
+
+		&::after {
+				content: "";
+				display: table;
+				clear: both;
+		}
+}

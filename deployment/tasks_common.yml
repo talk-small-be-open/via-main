@@ -47,6 +47,13 @@
       # 2.5*1024*1024*1024
       value: "2684354560"
       state: present
+  - name: ... dito for shmall
+    when: via.gemStone.keyfile is defined
+    sysctl:
+      name: "kernel.shmall"
+      # 2.5*1024*1024*1024 / 4KB   + 1 aufgerundet
+      value: "655361"
+      state: present
 
 
   #
@@ -69,6 +76,13 @@
       owner: root
       group: root
      
+  - name: logrotate config for turnserver
+    become_user: root
+    template:
+      src: files/logrotate/turnserver.j2
+      dest: /etc/logrotate.d/turnserver
+      owner: root
+      group: root
 
   #
   # User config
@@ -160,6 +174,7 @@
 #        - 'jmeter' # for integration tests
         - 'openjdk-11-jre' # for jmeter (jmeter from apt is outdated)
 #         - 's3cmd' # For S3backup
+        - 'iftop' #network monitoring
       state: present
 
       
@@ -559,7 +574,15 @@
       line: "TURNSERVER_ENABLED=1"
     notify:
       - restart coturn
-
+  - name: coturn init.d DONT start with verbose
+    lineinfile:
+      state: present
+      path: /etc/init.d/coturn
+      regexp: '^DAEMON_ARGS=.*'
+      line: 'DAEMON_ARGS="-c /etc/turnserver.conf -o"'
+    notify:
+      - restart coturn
+    
   #    
   # JMeter
   # 
@@ -615,4 +638,18 @@
       owner: "{{remoteUser}}"
       mode: 0600
 
+  # Workaround, for a GemStone/systemd bug see https://gemtalksystems.com/data/bugnotes/47499.html
+  - name: systemd parameter for GemStone
+    lineinfile:
+      state: present
+      path: /etc/systemd/logind.conf
+      regexp: 'RemoveIPC='
+      line: 'RemoveIPC=no'
+
+
+
+    
   - import_tasks: tasks_firewall.yml
+
+
+  
