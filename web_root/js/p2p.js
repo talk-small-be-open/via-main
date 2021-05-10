@@ -236,13 +236,16 @@ function p2pLog(message) {
 }
 
 function p2pLogError(element, message) {
-	const logContainer = element.querySelector('span.p2pMessages');
-	const span = document.createElement('span');
+	if (p2pDebug) {
 
-	p2pLog(message);
-	
-	span.appendChild(document.createTextNode(message + ' '));
-	logContainer.appendChild(span);
+		const logContainer = element.querySelector('span.p2pMessages');
+		const span = document.createElement('span');
+
+		p2pLog(message);
+		
+		span.appendChild(document.createTextNode(message + ' '));
+		logContainer.appendChild(span);
+	}
 }
 
 function p2pClearLog(element) {
