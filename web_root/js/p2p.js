@@ -148,7 +148,8 @@ function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null
 }
 
 function p2pStop(elementId, otherPeerId) {
-	p2pSetConnection(element, otherPeerId, null)
+	const element = document.getElementById(elementId);
+	p2pSetConnection(element, otherPeerId, null);
 }
 
 // Get a connection object, which we have tracked, or generate a new
