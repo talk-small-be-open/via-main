@@ -68,7 +68,7 @@
       owner: root
       group: root
 
-  - name: logrotate config for seaside gems
+  - name: logrotate config for seaside gems, peer, turnserver etc.
     become_user: root
     template:
       src: files/logrotate/via.j2
@@ -76,13 +76,13 @@
       owner: root
       group: root
      
-  - name: logrotate config for turnserver
-    become_user: root
-    template:
-      src: files/logrotate/turnserver.j2
-      dest: /etc/logrotate.d/turnserver
-      owner: root
-      group: root
+  # - name: logrotate config for turnserver
+  #   become_user: root
+  #   template:
+  #     src: files/logrotate/turnserver.j2
+  #     dest: /etc/logrotate.d/turnserver
+  #     owner: root
+  #     group: root
 
   #
   # User config

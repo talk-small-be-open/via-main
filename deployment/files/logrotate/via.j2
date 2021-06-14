@@ -25,3 +25,20 @@
 	delaycompress
 }
 
+/var/log/peerjs.log {
+	copytruncate
+	daily
+	missingok
+	rotate 3
+	compress
+	delaycompress
+}
+
+/var/log/turnserver.log {
+	copytruncate
+	daily
+	missingok
+	rotate 3
+	compress
+	delaycompress
+}
