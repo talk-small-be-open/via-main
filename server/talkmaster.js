@@ -40,7 +40,7 @@ function removeItemAll(arr, value) {
 // Server waits for incoming connections
 wss.on('connection', function connection(ws, request) {
 
-	console.log(request.url);
+//	console.log(request.url);
 	
 	const requestUrl = new URL(request.url, 'wss://dummy'); // url.parse(request.url)
   const pathName = requestUrl.pathname;
@@ -57,7 +57,7 @@ wss.on('connection', function connection(ws, request) {
 		return;
 	}
 
-	console.log('Incoming connection in room ' + roomName);
+	console.log('Joining room: ' + roomName);
 
 	// Create room and add connection
 	if (!rooms[roomName]) {rooms[roomName] = [ ] };
@@ -65,12 +65,12 @@ wss.on('connection', function connection(ws, request) {
 	
   ws.on('message', function incoming(data) {
 
-		console.log('Incoming data ' + data);
+		console.log('In: ' + data);
 
 		clients = rooms[roomName]; // TODO without myself ws
     clients.forEach(function each(client) {
       if ((client != ws) && (client.readyState === WebSocket.OPEN)) {
-				console.log('Resend data ' + data);
+				console.log('Fwd');
         client.send(data);
       }
     });
