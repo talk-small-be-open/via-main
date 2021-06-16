@@ -52,8 +52,9 @@ function loadScroll(id) {
 	var y = Cookies.get("page_scroll_" + id);
 	if (!y) {return}
 	//$(document).scrollTop(y);
-	document.documentElement.scrollTop = document.body.scrollTop = y;
-
+//	document.documentElement.scrollTop = document.body.scrollTop = y;
+	window.scroll({behavior: 'auto', top: y});
+	
 	isLoadScrollDone = true;
 }
 
