@@ -36,6 +36,13 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 		}
 		
 	  var peer = new Peer(myPeerId, peerOptions);
+
+		// if (!peer.util.supports.reliable) {
+		// 	alert('"old browser!"')
+		// }
+		// if (!peer.util.supports.data) {
+		// 	alert('"old browser!"')
+		// }
 		
 	  peer.on("open", function(id) {
 			p2pLog("My peer ID is: " + id);
@@ -48,6 +55,12 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 			reject("Could not connect to peer server: " + error);
 		});
 
+	  peer.on("close", function() {
+			p2pStatusError(element, "Peer closed. Please reload page.");
+			reject("Closed connection to peer server.");
+		});
+
+		
 		// On incoming connection
 	  peer.on("connection", function(c) {
 			p2pLog("Incoming connection!");
@@ -57,8 +70,14 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 				p2pStatusError(element, "Connection:  " + error);
 			});
 
+			c.on("close", function() {
+				p2pLog("Outgoing connection closed");
+				p2pSetConnection(element, c.peer, null);
+			});
+
 			c.on("data", function(data){ p2pOnData(element, data, c, onDataFunction) });
 
+//			setTimeout(function(){ p2pSend(elementId, c.peer, 'ping'); }, 500);
 			p2pSend(elementId, c.peer, 'ping');
 		});
 
@@ -66,7 +85,7 @@ function p2pInit(elementId, myPeerId, onDataFunction, turnConfig) {
 		// On disconnection
 	  peer.on("disconnected", function(c) {
 			p2pLog("Peer server disconnected");
-			// peer.reconnect(); // Makes sense?
+			setTimeout(function() { peer.reconnect(); }, 1000);
 		});
 		
 	});
@@ -119,10 +138,10 @@ function p2pOnData(element, data, connection, callback) {
 
 
 // Called by the seaside component VIAP2p...
-function p2pStart(elementId, myPeerId, otherPeerId = null, onDataFunction = null, sendOnConnect = null, turnConfig = {}) {
+function p2pStart(elementId, myPeerId, otherPeerId = null, startConnection = false, onDataFunction = null, sendOnConnect = null, turnConfig = {}) {
 	return p2pInit(elementId, myPeerId, onDataFunction, turnConfig).then(peer => {
 
-		if (otherPeerId) {
+		if (startConnection) {
 			p2pLog('P2P Trying to contact ' + otherPeerId);
 			const element = document.getElementById(elementId);
 			return p2pGetConnection(element, otherPeerId).then(conn => {
@@ -155,40 +174,79 @@ function p2pStop(elementId, otherPeerId) {
 // Get a connection object, which we have tracked, or generate a new
 function p2pGetConnection(element, otherPeerId) {
 	var promise = new Promise( (resolve, reject) => {
-		const connectionId = 'p2p_' + element.id + '_' + otherPeerId;	
-		var conn = p2pConnections[connectionId];
 
-		if (conn) {
-			if (conn.open) {
-				resolve(conn);
-			}
-			else {
-				conn.on("open", function() {
+		// const connectionId = 'p2p_' + element.id + '_' + otherPeerId;	
+		// var conn = p2pConnections[connectionId];
+
+		// // Is there an existing connection?
+		// if (conn) {
+		// 	if (conn.open) {
+		// 		p2pLog("Using existing opened connection");
+		// 		resolve(conn);
+		// 	}
+		// 	else {
+		// 		p2pLog("Using existing connection, but waiting for opening");
+		// 		conn.on("open", function() {
+		// 			resolve(conn);
+		// 		})				
+		// 	}
+		// 	// else {
+		// 	// 	// We cant give a non-open connection. There must be something wrong
+		// 	// 	p2pLog("Existing connection but it is closed");
+		// 	// 	reject();
+		// 	// }
+		// }
+		// else {
+		const openPeer = p2pPeers[element.id]; // peer of myself
+
+
+		// create a new connection
+		openPeer.then(peer => {
+
+			const connectionId = 'p2p_' + element.id + '_' + otherPeerId;	
+			var conn = p2pConnections[connectionId];
+
+			// Is there an existing connection?
+			if (conn) {
+				if (conn.open) {
+					p2pLog("Using existing opened connection");
 					resolve(conn);
-				})				
-			}
-		}
-		else {
-			const openPeer = p2pPeers[element.id];
+				}
+				else {
+					p2pLog("Using existing connection, but waiting for opening");
+					conn.on("open", function() {
+						resolve(conn);
+					})				
+				}
+			} else {
 
-			openPeer.then(peer => {
+				p2pLog("Using a new connection");
+				conn = peer.connect(otherPeerId, {reliable: false, serialization: 'json'}); // Best compat json
+
 				p2pLog("Outgoing connection created");
-				conn = peer.connect(otherPeerId, {reliable: true});
+				p2pSetConnection(element, otherPeerId, conn);
+
 				conn.on("open", function() {
 					p2pLog("Outgoing connection opened");
 					resolve(conn);
 				});
-				conn.on("error", function() {
+
+				conn.on("close", function() {
+					p2pLog("Outgoing connection closed");
+					p2pSetConnection(element, otherPeerId, null);
 					reject();
 				});
 
-				p2pSetConnection(element, otherPeerId, conn);
+				conn.on("error", function(error) {
+					p2pStatusError(element, "Peer error: " + error.type + ' ' + error);
+					reject(error);
+				});
 
-				
-			});
-		}
+				//				p2pSetConnection(element, otherPeerId, conn);
+			}
+		});
 	});
-
+	
 	return promiseTimeout(60000, promise);
 }
 
@@ -197,7 +255,7 @@ function p2pSetConnection(element, otherPeerId, connection) {
 	const connectionId = 'p2p_' + element.id + '_' + otherPeerId;
 	// Delete old, if any
 	if (p2pConnections[connectionId]) {
-		p2pLog('Exchanging existing connection');
+		p2pLog('Exchanging existing connection ' + connectionId );
 		p2pConnections[connectionId].close();
 	}
 	
@@ -220,6 +278,7 @@ function p2pSendWithConnection(connection, data) {
 function p2pSend(elementId, otherPeerId, data) {
 	const element = document.getElementById(elementId);
 
+	p2pLog("Preparing to send: " + data);
 	p2pGetConnection(element, otherPeerId).then(conn => {
 		p2pSendWithConnection(conn, data);
 	}).catch((error)=>{

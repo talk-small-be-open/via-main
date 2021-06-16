@@ -22,7 +22,7 @@
   service:
     name: monit
     enabled: yes
-    state: restarted
+    state: reloaded #dont restarted
     use: sysvinit
 
 - name: restart coturn
@@ -33,3 +33,4 @@
     
 - name: create postfix aliases
   shell: newaliases
+

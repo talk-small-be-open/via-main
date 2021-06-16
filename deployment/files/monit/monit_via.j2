@@ -45,6 +45,13 @@ check process via_peerjs_server matching "^node .*/bin/peerjs --port 9001 .*$"
  			if 7 restarts within 10 cycles then stop
 			if cpu > 60% for 4 cycles then alert
 
+# talkmaster WebSockets Server
+check process via_talkmaster_server matching "^node .*talkmaster\.js.*$"
+			start program = "/bin/bash -l /opt/via/via_base/server/start_talkmaster.sh" as uid "{{remoteUser}}" gid "adm"
+			stop program = "/bin/bash -l /opt/via/via_base/server/stop_talkmaster.sh" as uid "{{remoteUser}}" gid "adm" with timeout 90 seconds
+ 			if 7 restarts within 10 cycles then stop
+			if cpu > 60% for 4 cycles then alert
+
 # Diskspace
 check device disk with path /
    		if SPACE usage > 90% then alert

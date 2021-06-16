@@ -42,3 +42,12 @@
 	compress
 	delaycompress
 }
+
+/var/log/talkmaster.log {
+	copytruncate
+	daily
+	missingok
+	rotate 3
+	compress
+	delaycompress
+}

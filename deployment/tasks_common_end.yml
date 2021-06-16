@@ -39,6 +39,9 @@
 - name: Ensure all GemStone gems are is running
   shell: monit -g via_gemstone_gems start
 
+- name: Ensure timemaster is freshly started
+  shell: monit via_talkmaster_server restart
+
 
 # Include site specific tasks
 - import_tasks: "site/tasks_{{instanceName}}.yml"

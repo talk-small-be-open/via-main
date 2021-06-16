@@ -14,7 +14,7 @@ var tmConnections = {};
 var tmDebug = true;
 
 
-function tmInit(elementId, roomName, ticketToRide, onDataFunction, turnConfig) {
+function tmInit(elementId, roomName, ticketToRide, onDataFunction) {
 	const element = document.getElementById(elementId);
 
 	var openWs = new Promise( (resolve, reject) => {
@@ -24,28 +24,31 @@ function tmInit(elementId, roomName, ticketToRide, onDataFunction, turnConfig) {
 	  var ws = new WebSocket(wsUrl);
 
 		tmSetConnection(roomName, ws);
+
+		element.classList.add('open');
 		
 	  ws.onopen = function() {
-			tmLog("Connection opened");
+			tmLog("Connection to Talkmaster opened");
 			resolve(ws);
-			element.classList.add('open');
 		};
 
-	  ws.onerror = function(error) {
+	  ws.onerror = function(evt) {
 			tmStatusError(element, "Peer error: " + error);
-			reject("Could not connect to peer server: " + error);
+			reject("WebSocket connection error");
 		};
 
 	  ws.onclose = function() {
-			tmStatusError(element, "Peer closed. Please reload page.");
-			reject("Closed connection to peer server.");
+			tmStatusError(element, "Connection closed. Please reload page.");
+			reject("Closed connection to Talkmaster server.");
+
+			// reconnect automatically
+			setTimeout(function(){ tmInit(elementId, roomName, ticketToRide, onDataFunction), 1000})
 		};
 
 		ws.onmessage = function(evt){
 			tmOnData(element, JSON.parse(evt.data), ws, onDataFunction)
 		};
 
-		tmSend(element, roomName, 'ping');
 	});
 
 	return openWs;
@@ -97,7 +100,8 @@ function tmStart(elementId, roomName, ticketToRide, onDataFunction = null, sendO
 	return tmInit(elementId, roomName, ticketToRide, onDataFunction).then(ws => {
 
 		tmLog('TM initialized');
-		
+		tmSendWithConnection(ws, 'ping');
+
 		if (sendOnConnect) {
 			tmSendWithConnection(ws, sendOnConnect);
 		}
@@ -113,26 +117,21 @@ function tmStop(elementId, roomName) {
 // Get a connection object, which we have tracked, or generate a new
 function tmGetConnection(roomName) {
 	var promise = new Promise( (resolve, reject) => {
-//		const connectionId = 'tm_' + element.id + '_' + otherPeerId;	
 		var conn = tmConnections[roomName];
 
 		// Is there an existing connection?
-		if (conn) {
-      if (conn.readyState === WebSocket.OPEN) {
-				tmLog("Using existing opened connection");
-				resolve(conn);
-			}
-			else {
-				tmLog("Using existing connection, but waiting for opening");
-// DONT! IT OVERWRITES
-				conn.onopen = function() {
-					resolve(conn);
-				}				
-			}
+    if (conn && (conn.readyState === WebSocket.OPEN)) {
+			tmLog("Using existing opened connection");
+			resolve(conn);
+		}
+		else {
+			tmLog("Tried to use connection, but not ready/existing");
+			reject();
 		}
 	});
 
-	return promiseTimeout(60000, promise);
+	return promise;
+//	return promiseTimeout(60000, promise);
 }
 
 // Save an existing connection

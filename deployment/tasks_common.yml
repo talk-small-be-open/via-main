@@ -164,8 +164,8 @@
         - 'python-boto'
         - 'iperf3'
         - 'figlet'
-        - 'nodejs'
-        - 'npm'
+# neu mit eigenem apt repo        - 'nodejs'
+# dito       - 'npm'
         - 'goaccess'
         - 'tmux'
         - 'lnav'
@@ -215,6 +215,23 @@
       classic: yes
       name: certbot
 
+
+  # NODE JS
+  - name: "Add nodejs apt key"
+    apt_key:
+      url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+      state: present
+  - name: "Add nodejs 14.x ppa for apt repo (for Ubuntu 18 bionic)"
+    apt_repository:
+      repo: deb https://deb.nodesource.com/node_14.x bionic main
+      update_cache: yes
+  - name: "Install nodejs"
+    apt:
+      update_cache: yes
+      name: nodejs=14.17.1-1nodesource1
+      state: present
+
+    
   # PHP (NGINX Upload helper)
   - name: PHP for nginx
     apt: pkg=php-fpm
@@ -242,6 +259,24 @@
       group: '{{remoteUser}}'
 #      mode: 
 
+
+  # Talkmaster websockets server
+  - name: Install ws (websocket server) npm package for talkmaster
+    npm:
+      name: "{{item}}"
+      global: yes
+    with_items:
+      - bufferutil
+      - utf-8-validate
+      - ws
+  - name: Custom log file for talkmaster
+    copy:
+      content: "Talkmaster log file"
+      force: no
+      dest: /var/log/talkmaster.log
+      owner: '{{remoteUser}}'
+      group: '{{remoteUser}}'
+  
 
   #
   # HAPROXY LOAD BALANCER
