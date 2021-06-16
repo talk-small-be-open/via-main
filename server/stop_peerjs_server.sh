@@ -1,4 +1,3 @@
 #!/bin/bash
 
-# TODO OPTIMIZE!
-killall node
+pkill --newest --full "node.*peerjs.*"
