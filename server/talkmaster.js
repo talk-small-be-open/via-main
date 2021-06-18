@@ -8,6 +8,7 @@
 // Takes data on a connection and distributes it to the other connections in the same room.
 // A room is simply the URL-path.
 //
+// Uses ws - see https://github.com/websockets/ws
 
 // TODO
 // - garbage collection of unused rooms
@@ -79,7 +80,14 @@ wss.on('connection', function connection(ws, request) {
 	
 	ws.on('close', function closing(){
 		console.log('Closing connection');
-		removeItemAll(rooms[roomName], ws);
+		var room = rooms[roomName];
+
+		removeItemAll(room, ws);
+
+		if (rooms.length == 0) {
+			console.log('Deleting empty room');
+			delete rooms[roomName];
+		}
 	});
 	
 });

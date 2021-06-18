@@ -1,9 +1,1 @@
-User-agent: *
-Disallow: /files/
-
-User-agent: *
-Disallow: /app?*
-
-Crawl-delay: 10
-
-#TBD: Insert automatic updates from a bad bots blocker
+site/robots.txt
