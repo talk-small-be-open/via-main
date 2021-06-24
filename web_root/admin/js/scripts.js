@@ -295,5 +295,11 @@ $(document).ready(function(){
 		// emptyOptionLabel: 'leer',
 		// allowEmptyOption: false
 	});
+
+
+	preventBackButton(function(){
+		const niceMessage = ";-) How dare you using this tiny little control freakish piece of browser function called the back button!! Do NOT use it here. This backend is soooo intelligent indeed and should not be bossed around from a rude barbaric back button. Please use the UI functionality for your intentioned goal instead.";
+		Alert.swh("Don't use the back button", niceMessage);
+	});
 	
 });

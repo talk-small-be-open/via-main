@@ -52,7 +52,7 @@ function loadScroll(id) {
 	var y = Cookies.get("page_scroll_" + id);
 	if (!y) {return}
 	//$(document).scrollTop(y);
-//	document.documentElement.scrollTop = document.body.scrollTop = y;
+	//	document.documentElement.scrollTop = document.body.scrollTop = y;
 	window.scroll({behavior: 'auto', top: y});
 	
 	isLoadScrollDone = true;
@@ -126,7 +126,7 @@ function lazyLoad(){
 		var img = lazy[i];
     if(isInViewport(img)){
       if (img.getAttribute('data-src')){
-			
+				
 				img.src = img.getAttribute('data-src');
         img.removeAttribute('data-src');
 
@@ -228,4 +228,18 @@ function handleSessionCheck(responseData) {
 		// nothing
 	}
 	
+}
+
+function preventBackButton(thenCallback) {
+	// Hacky method to prevent back button
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function() {
+    window.history.pushState(null, "", window.location.href);
+		// or? this.props.history.go(1); see also https://subwaymatch.medium.com/disabling-back-button-in-react-with-react-router-v5-34bb316c99d7
+		
+		if (thenCallback) {
+			thenCallback();
+		}
+  }
+
 }
