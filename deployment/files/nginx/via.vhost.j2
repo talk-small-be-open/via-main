@@ -195,6 +195,17 @@ server {
 }
 {% endif %}
 
+# Redirect Domains
+{% if via.redirectedDomains %}
+server {
+		{% include 'listen_port.j2' %}
+		server_name {{via.redirectedDomains|join(" ")}};
+    access_log off;
+
+		return 301 https://{{via.appDomains[0]}}$request_uri;
+}
+{% endif %}
+
 
 {% if via.useSsl %}
 # Redirect HTTP->HTTPS
@@ -204,6 +215,9 @@ server {
     access_log off;
 		{% if via.portalDomains %}
 		server_name {{via.portalDomains|join(" ")}};
+		{% endif %}
+		{% if via.redirectedDomains %}
+		server_name {{via.redirectedDomains|join(" ")}};
 		{% endif %}
 
 		return 301 https://$host$request_uri;
