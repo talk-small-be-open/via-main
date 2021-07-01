@@ -43,10 +43,13 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 
 	var highlighted = all.slice(a, b+1);
 	all.removeClass("selected");
+
 	var toggle = true;
-	if ( (startElement != endElement) && ($(startElement).hasClass("highlighted") && $(endElement).hasClass("highlighted"))) {
-		toggle = false;
-	}
+	// Smart de-toggling is probably not user friendly enough. Unmarking should be done as a whole
+	// if ( (startElement != endElement) && ($(startElement).hasClass("highlighted") && $(endElement).hasClass("highlighted"))) {
+	// 	toggle = false;
+	// }
+	
 	highlighted.toggleClass("highlighted", toggle).addClass('touchedNow');
 
 	// var map = all.map(function(i,e){return $(e).hasClass("highlighted") ? e.textContent : notHighlightedSymbol}).get().join("");
@@ -67,6 +70,10 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 // Click on an already highlighted area. Remove highlight.
 function highlightAreas_onClick(event, id) {
 	var me = event.target;
+	highlightAreas_unhighlightArea(me, id);
+}
+
+function highlightAreas_unhighlightArea(me, id) {
 	
 	if ( !$(me).hasClass("selChar highlighted") || $(me).hasClass('touchedNow') ) {
 		return
@@ -76,7 +83,7 @@ function highlightAreas_onClick(event, id) {
 	var all = taskElement.data("allSelChars");
 	var groups = runningGroupArray(all, function(each){ return $(each).hasClass("highlighted") });
 	var myGroup = groups.find(function(each){return _.includes(each, me)})
-	$(myGroup).removeClass("highlighted");
+	$(myGroup).removeClass("highlighted").addClass('touchedNow');
 
 	highlightAreas_scan(taskElement);
 
@@ -87,17 +94,36 @@ function highlightAreas_onClick(event, id) {
 function highlightAreas_onStart(event, id) {
 	var taskElement = $("#"+id);
 	highlightAreas_selectFromTo(taskElement, event.target, event.target);
+
+	// var interaction = event.interaction
+
+  // if (!interaction.interacting()) {
+  //   interaction.start(
+  //     { name: 'drag' },
+  //     event.interactable,
+  //     event.currentTarget,
+  //   )
+  // }
 }
 
 function highlightAreas_onEnd(event, id) {
 	var taskElement = $("#"+id);
-	highlightAreas_highlightFromTo(taskElement, event.relatedTarget || event.target, event.target);
+	var me = event.target;
+
 	var all = taskElement.data("allSelChars");
 	all.removeClass("selected");
 
-	// Remove special marker, for timing issues
-	setTimeout(function(){highlightAreas_resetTouch(taskElement)}, 1000);
+	// Detecting a sort-of click. drag/drop on the very same character is seen as a tap/click for removing the highlight
+	if ( (event.relatedTarget == null) && ($(me).hasClass('highlighted') || $(me).hasClass('touchedNow')) ) {
+		// console.log('unhi');
+		// highlightAreas_unhighlightArea(me, id);
+	} else {
+		
+		highlightAreas_highlightFromTo(taskElement, event.relatedTarget || me, me);
 
+		// Remove special marker, for timing issues
+		setTimeout(function(){highlightAreas_resetTouch(taskElement)}, 300);
+	}
 }
 
 // Write the highlighted structure into a form element

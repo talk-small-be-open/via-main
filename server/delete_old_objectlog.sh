@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 STONE=$1
 
@@ -7,4 +6,10 @@ STONE=$1
 # todeIt $STONE ol clear --age=\`30 days\` error
 
 # Strange that todeIt writes some text to stderr instead stdout, we redirect. Errors are catched through exit code.
-todeIt $STONE ol clear --age=\`7 days\` 2>&1
+
+# Bug in tODE, we need to state either continuation or priorities, else age would be ignored, and ALL cleared.
+# Clean heavy weight continuations from seaside errors (would blow up repository)
+todeIt $STONE ol clear --continuation --age=\`7 days\`   2>&1
+
+# Clean very old info entries
+todeIt $STONE ol clear --age=\`180 days\` info transcript   2>&1
