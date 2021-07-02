@@ -35,12 +35,40 @@ function highlightAreas_resetTouch(taskElement) {
 
 function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 
+	const wholeWordsOnly = (taskElement[0].dataset.wholewordsonly == "yes");
+
+	var realStartElement = startElement;
+	var realEndElement = endElement;
+
 	var all = taskElement.data("allSelChars");
 	var a = all.index(startElement); 
-	var b = all.index(endElement); 
+	var b = all.index(endElement);
 
+	// Swap, if marked from right to left
 	if (a>b) {[a, b] = [b, a]}
+	
+	// Auto expand to word boundaries?
+	if (wholeWordsOnly) {
+		const before = all.toArray().slice(0, a).reverse(); // all before.
+		const after = all.toArray().slice(b+1); // all after
+		var foundSpaceIndex;
 
+		// Look before
+		foundSpaceIndex = before.findIndex( el => $(el).text().trim() == '' );
+		if (foundSpaceIndex >= 0 ) {
+			a = (a - foundSpaceIndex); 
+			realStartElement = all[a];
+		}
+
+		// Look after
+		foundSpaceIndex = after.findIndex( el => $(el).text().trim() == '' );
+		if (foundSpaceIndex >= 0 ) {
+			b = (b + foundSpaceIndex); 
+			realEndElement = all[b];
+		}
+
+	}
+	
 	var highlighted = all.slice(a, b+1);
 	all.removeClass("selected");
 
@@ -60,8 +88,8 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 	taskElement.trigger("via:highlightchanged", [text]);
 	
 	// Hit detection. Selection has to be within an area, then we fire some ajax
-	var leftArea = $(startElement).closest("span.highlightArea");
-	var rightArea = $(endElement).closest("span.highlightArea");
+	var leftArea = $(realStartElement).closest("span.highlightArea");
+	var rightArea = $(realEndElement).closest("span.highlightArea");
 	if (leftArea[0] && (leftArea[0] == rightArea[0])) {
 		leftArea.trigger("via:highlightinarea", [text]);
 	}
@@ -118,7 +146,7 @@ function highlightAreas_onEnd(event, id) {
 		// console.log('unhi');
 		// highlightAreas_unhighlightArea(me, id);
 	} else {
-		
+
 		highlightAreas_highlightFromTo(taskElement, event.relatedTarget || me, me);
 
 		// Remove special marker, for timing issues
