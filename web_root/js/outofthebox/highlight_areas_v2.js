@@ -55,17 +55,21 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 
 		// Look before
 		foundSpaceIndex = before.findIndex( el => $(el).text().trim() == '' );
-		if (foundSpaceIndex >= 0 ) {
-			a = (a - foundSpaceIndex); 
-			realStartElement = all[a];
+		if (foundSpaceIndex == -1 ) {
+			// Expand to start of text
+			foundSpaceIndex = a;
 		}
+		a = (a - foundSpaceIndex); 
+		realStartElement = all[a];
 
 		// Look after
 		foundSpaceIndex = after.findIndex( el => $(el).text().trim() == '' );
-		if (foundSpaceIndex >= 0 ) {
-			b = (b + foundSpaceIndex); 
-			realEndElement = all[b];
+		if (foundSpaceIndex == -1 ) {
+			// Expand to end of text
+			foundSpaceIndex = b;
 		}
+		b = (b + foundSpaceIndex); 
+		realEndElement = all[b];
 
 	}
 	

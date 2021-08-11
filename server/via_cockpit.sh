@@ -13,17 +13,18 @@ if [ $? -eq 0 ]; then
 fi
                                  
 # create a new session, named $SESSION, and detach from it
-$tmux new-session -d -s $SESSION
+$tmux new-session -d -s $SESSION 'goaccess --log-format=COMBINED /var/log/nginx/access.log'
 
-$tmux new-window    -t $SESSION:0
+# $tmux new-window    -t $SESSION:0 'goaccess --log-format=COMBINED /var/log/nginx/access.log'
+# $tmux select-layout main-horizontal
+# $tmux split-window -h -t $SESSION:0 goaccess --log-format=COMBINED /var/log/nginx/access.log
+$tmux split-window -h -t $SESSION:0 sudo iftop
+$tmux split-window -h -t $SESSION:0 lnav /var/log/nginx/error.log
+$tmux split-window -h -t $SESSION:0 lnav ~/stone/logs/SeasideMaintenanceVM_server-instance.log
+$tmux split-window -h -t $SESSION:0 'sudo watch -d -n 10 -t ~/vb/server/status.sh'
+$tmux split-window -v -t $SESSION:0 tload
+
 $tmux select-layout main-horizontal
-$tmux split-window -h -p 33 -t $SESSION:0 goaccess --log-format=COMBINED /var/log/nginx/access.log
-$tmux split-window -h -p 33 -t $SESSION:0 sudo iftop
-$tmux split-window -h -p 33 -t $SESSION:0 lnav /var/log/nginx/error.log
-$tmux split-window -h -p 33 -t $SESSION:0 lnav ~/stone/logs/SeasideMaintenanceVM_server-instance.log
-$tmux split-window -h -p 33 -t $SESSION:0 watch -d -n 10 -t ~/vb/server/status.sh
-$tmux split-window -v -p 50 -t $SESSION:0 tload
-
 
 
 # $tmux new-window    -t $SESSION:0 
