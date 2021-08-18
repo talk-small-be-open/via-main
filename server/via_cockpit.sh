@@ -22,7 +22,7 @@ $tmux split-window -h -t $SESSION:0 sudo iftop
 $tmux split-window -h -t $SESSION:0 lnav /var/log/nginx/error.log
 $tmux split-window -h -t $SESSION:0 lnav ~/stone/logs/SeasideMaintenanceVM_server-instance.log
 $tmux split-window -h -t $SESSION:0 'sudo watch -d -n 10 -t ~/vb/server/status.sh'
-$tmux split-window -v -t $SESSION:0 tload
+$tmux split-window -v -t $SESSION:0 tload --delay 60
 
 $tmux select-layout main-horizontal
 
