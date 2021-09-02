@@ -175,6 +175,7 @@
         - 'openjdk-11-jre' # for jmeter (jmeter from apt is outdated)
 #         - 's3cmd' # For S3backup
         - 'iftop' #network monitoring
+        - 'iotop'
       state: present
 
       
@@ -228,7 +229,7 @@
   - name: "Install nodejs"
     apt:
       update_cache: yes
-      name: nodejs=14.17.1-1nodesource1
+      name: nodejs=14.17.*
       state: present
 
     
