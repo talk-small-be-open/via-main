@@ -1,6 +1,7 @@
 //
 // VIA JavaScript
 //
+// Take this as a template
 
 
 function login_facebook() {
@@ -58,20 +59,29 @@ function textinput_markAsEmpty(event, elementId) {
 	}	
 }
 
+// UI processing of DOM elements, but also useful for AJAX content loads
+function processHtmlDocument(contextElement) {
+	$('.popover', contextElement).webuiPopover({trigger:'hover', placement:'auto'});
+	$('span.dictionaryEntry', contextElement).webuiPopover({trigger:'hover', placement:'auto-top'});
+
+  $('textarea', contextElement).autosize();
+
+	if ( ! (typeof JoelPurra === 'undefined') ) {
+		$('input.clozeTextPlaceholder', contextElement).plusAsTab();
+	}
+}
 
 /* Haupt JS init */
 $(document).ready(function(){
 
-	JoelPurra.PlusAsTab.setOptions({
-		// Use the enter key as tab keys
-		key: [13]
-	});	
+	if ( ! (typeof JoelPurra === 'undefined') ) {
+		JoelPurra.PlusAsTab.setOptions({
+			// Use the enter key as tab keys
+			key: [13]
+		});
+	}
 
-	$('.popover').webuiPopover({trigger:'hover'});
-	$('span.dictionaryEntry').webuiPopover({trigger:'hover'});
-	$('input.clozeTextPlaceholder').plusAsTab();
-
-  $("textarea").autosize();
+	processHtmlDocument(document);
 
 	$.mapael.prototype.defaultOptions = {
     map: {
