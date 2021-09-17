@@ -17,3 +17,7 @@ GEM_TEMPOBJ_CACHE_SIZE = 300MB;
 STN_TRAN_FULL_LOGGING = TRUE;
 STN_TRAN_LOG_DIRECTORIES = $GEMSTONE_TRANLOGDIR/, $GEMSTONE_TRANLOGDIR/;
 STN_TRAN_LOG_SIZES = 100, 100;
+
+# Some regular expressions take 2 levels per character. So we assume texts up to 2500 characters and need 5000 depth
+# default would be 1000, has been proven to be to low.
+GEM_MAX_SMALLTALK_STACK_DEPTH = 5000;
