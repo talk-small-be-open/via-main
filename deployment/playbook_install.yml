@@ -64,6 +64,31 @@
       group: "{{remoteUser}}"
       mode: 0644
 
+
+# Ensure there is Swap memory (GemStone loves lots of memory)
+  - name: Create swap file
+    command: dd if=/dev/zero of={{swapFilePath}} bs=1024 count={{swapFileSizeMb}}k
+             creates="{{swapFilePath}}"
+
+  - name: Change swap file permissions
+    file: path="{{swapFilePath}}" owner=root group=root mode=0600
+
+  - name: "Check swap file type"
+    command: file {{swapFilePath}}
+    register: swapfile
+
+  - name: Make swap file
+    command: "sudo mkswap {{swapFilePath}}"
+    when: swapfile.stdout.find('swap file') == -1
+
+  - name: Write swap entry in fstab
+    mount: name=none src={{swap_file_path}} fstype=swap opts=sw passno=0 dump=0 state=present
+
+  - name: Mount swap
+    command: "swapon {{swap_file_path}}"
+    when: ansible_swaptotal_mb < 1
+
+    
   #new as snap recommended - name: Add apt repo for certbot
   #   apt_repository:
   #     repo: ppa:certbot/certbot
@@ -81,8 +106,8 @@
       group: '{{remoteUser}}'
     with_items:
       - "{{via.installationPath}}"
-      - "{{via.installationPath}}/via_base"
-      - "{{via.installationPath}}/via_site"
+#      - "{{via.installationPath}}/via_base"
+#      - "{{via.installationPath}}/via_site"
       - "{{via.installationPath}}/install"
       - "{{via.installationPath}}/export"
       - "{{via.installationPath}}/log"
@@ -173,7 +198,7 @@
   - name: GIVE user sudo permission without password. Will be removed later.
     copy:
       content: '{{remoteUser}} ALL=(ALL) NOPASSWD:ALL'
-      dest: /etc/sudoers.d/mediaclue
+      dest: /etc/sudoers.d/temporaryforgemstone
       owner: root
       group: root
       
@@ -186,7 +211,7 @@
 
   - name: REMOVE user sudo permission without password.
     file:
-      path: /etc/sudoers.d/mediaclue
+      path: /etc/sudoers.d/temporaryforgemstone
       state: absent
 
 
@@ -197,7 +222,7 @@
     become: no
     
   - name: Try to avoid big download and take GemStone locally
-    when: isOnLocalNetwork is defined and isOnLocalNetwork == "true" and gemstone_zip_file_local.stat.exists 
+    when: isOnLocalNetwork is defined and isOnLocalNetwork == true and gemstone_zip_file_local.stat.exists 
     copy:
       src: "files/gemstone/GemStone64Bit3.4.5-x86_64.Linux.zip"
       dest: "/opt/GsDevKit_home/shared/downloads/zip/GemStone64Bit3.4.5-x86_64.Linux.zip"
@@ -206,6 +231,7 @@
       mode: 0666
     
   - name: Create stone
+    ignore_errors: yes # Strange: The output from that script seems to be interpreted as error
     become_user: "{{remoteUser}}"
     shell: "createStone {{stoneName}} {{via.gemStone.version}}"
     args:
@@ -214,13 +240,12 @@
 
 
   - name: Overwrite with our own gem.conf
-    copy:
-      src: "files/gemstone/gem.conf"
+    template:
+      src: "files/gemstone/gem.conf.j2"
       dest: "/opt/GsDevKit_home/server/stones/{{stoneName}}/{{stoneName}}.conf"
       owner: "{{remoteUser}}"
       mode: 0644
     
-  
   - name: Create tODE client
     become_user: "{{remoteUser}}"
     shell: "createClient tode"
@@ -250,8 +275,6 @@
       path: "{{via.installationPath}}/install/INSTALLATION_IS_DONE.log"
     register: installation_is_done_file
 
-  # TODO! WIeder reinnehmen!!! Nur für 321 update auskommentiert!
-  # TBD: Bei 321 migration rauskommentieren
   - set_fact:
       via_is_installed: True
     when: installation_is_done_file.stat.exists == true

@@ -11,6 +11,7 @@
     file:
       dest: "/home/{{remoteUser}}/stone"
       src: "/opt/GsDevKit_home/server/stones/{{stoneName}}"
+      force: yes
       state: link
 
   - name: Create working user convenience symlink for via_base
@@ -235,11 +236,20 @@
     
   # PHP (NGINX Upload helper)
   - name: PHP for nginx
-    apt: pkg=php-fpm
+    apt:
+      name: php-fpm=1:7.2*
   - name: via php.ini settings
     copy:
       src: files/nginx/php.ini
       dest: /etc/php/7.2/fpm/conf.d/99-via.ini
+      owner: 'root'
+      group: 'root'
+    notify:
+      - restart PHP
+  - name: via php-fpm.conf settings
+    copy:
+      src: files/nginx/php-fpm.conf
+      dest: /etc/php/7.2/fpm/pool.d/www.conf
       owner: 'root'
       group: 'root'
     notify:
@@ -383,12 +393,14 @@
       mode: 0640
     
   - name: options-ssl-nginx.conf file
+    when: via.useSsl
     copy:
       src: files/nginx/options-ssl-nginx.conf
       dest: /etc/letsencrypt/options-ssl-nginx.conf
       owner: 'root'
       group: 'root'
   - name: ssl-dhparams.pem file
+    when: via.useSsl
     copy:
       src: files/nginx/ssl-dhparams.pem
       dest: /etc/letsencrypt/ssl-dhparams.pem
