@@ -1,4 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# export GS_HOME=/opt/321via/GsDevKit_home
-todeIt $1 eval "\`$2\`" \; commit 2>&1
+# Executes Smalltalk code
+# Usage: executeSmalltalk.sh <stonename> "smalltalk code" [logfile]
+
+# Set logfile
+LOGFILE=${3:-"executeSmalltalk.log"}
+
+# Get smalltalk code
+# OPTIMIZE: Ensure Smalltalk code ends with a dot
+CODE=$2
+
+
+startTopaz $1 -q -l << EOF >& /dev/null 
+iferror stack
+display oops
+output pushnew $LOGFILE
+login
+run
+$CODE
+System commitTransaction.
+%
+logout
+exit
+EOF

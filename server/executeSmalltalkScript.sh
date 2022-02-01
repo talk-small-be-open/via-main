@@ -1,12 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# TODO: include env vars from gemstone
-# output pushnew $GEMSTONE_LOGDIR/executeSmalltalk.log
+# Executes Smalltalk code
+# Usage: executeSmalltalk.sh <stonename> <scriptfile> [logfile]
 
+# Set logfile
+LOGFILE=${3:-"executeSmalltalk.log"}
 
-startTopaz $1 -q -l << EOF > /dev/null
+startTopaz $1 -q -l << EOF >& /dev/null 
+iferror stack
 display oops
-output pushnew executeSmalltalk.log
+output pushnew $LOGFILE
 login
 run
 $(cat $2)
