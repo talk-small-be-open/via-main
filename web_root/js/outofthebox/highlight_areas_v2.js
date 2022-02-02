@@ -54,7 +54,9 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 		var foundSpaceIndex;
 
 		// Look before
-		foundSpaceIndex = before.findIndex( el => $(el).text().trim() == '' );
+//		foundSpaceIndex = before.findIndex( el => $(el).text().trim() == '' );
+		foundSpaceIndex = before.findIndex( el => ! normalizeString($(el).text()).match(/^[a-z0-9]+$/i) );
+
 		if (foundSpaceIndex == -1 ) {
 			// Expand to start of text
 			foundSpaceIndex = a;
@@ -63,7 +65,8 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 		realStartElement = all[a];
 
 		// Look after
-		foundSpaceIndex = after.findIndex( el => $(el).text().trim() == '' );
+//		foundSpaceIndex = after.findIndex( el => $(el).text().trim() == '' );
+		foundSpaceIndex = after.findIndex( el => ! normalizeString($(el).text()).match(/^[a-z0-9]+$/i) );
 		if (foundSpaceIndex == -1 ) {
 			// Expand to end of text
 			foundSpaceIndex = b;

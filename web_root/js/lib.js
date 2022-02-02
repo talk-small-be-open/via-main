@@ -243,3 +243,8 @@ function preventBackButton(thenCallback) {
   }
 
 }
+
+// removes all special accents on the characters
+function normalizeString(inString) {
+	return inString.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+}
