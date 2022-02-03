@@ -7,9 +7,12 @@
 LOGFILE=${3:-"executeSmalltalk.log"}
 
 # Get smalltalk code
-# OPTIMIZE: Ensure Smalltalk code ends with a dot
 CODE=$2
 
+# Ensure Smalltalk code ends with a dot
+if [[ "$CODE" != *. ]]; then
+		CODE="$CODE."
+fi
 
 startTopaz $1 -q -l << EOF >& /dev/null 
 iferror stack

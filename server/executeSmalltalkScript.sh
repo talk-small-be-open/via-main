@@ -6,13 +6,22 @@
 # Set logfile
 LOGFILE=${3:-"executeSmalltalk.log"}
 
+# read code from file
+CODE=$(cat $2)
+
+# Ensure ends with a dot
+if [[ "$CODE" != *. ]]; then
+		CODE="$CODE."
+fi
+
+
 startTopaz $1 -q -l << EOF >& /dev/null 
 iferror stack
 display oops
 output pushnew $LOGFILE
 login
 run
-$(cat $2)
+$CODE
 System commitTransaction.
 %
 logout
