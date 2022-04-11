@@ -79,13 +79,13 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 	var highlighted = all.slice(a, b+1);
 	all.removeClass("selected");
 
-	var toggle = true;
+	// var toggle = true;
 	// Smart de-toggling is probably not user friendly enough. Unmarking should be done as a whole
 	// if ( (startElement != endElement) && ($(startElement).hasClass("highlighted") && $(endElement).hasClass("highlighted"))) {
 	// 	toggle = false;
 	// }
-	
-	highlighted.toggleClass("highlighted", toggle).addClass('touchedNow');
+	// highlighted.toggleClass("highlighted", toggle).addClass('touchedNow');
+	highlighted.addClass(['highlighted', 'highlightedNow', 'touchedNow']).addClass('touchedNow');
 
 	// var map = all.map(function(i,e){return $(e).hasClass("highlighted") ? e.textContent : notHighlightedSymbol}).get().join("");
 	// taskElement.find("input.charsMap").val(map);
