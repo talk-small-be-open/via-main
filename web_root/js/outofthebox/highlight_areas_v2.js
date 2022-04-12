@@ -85,7 +85,7 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 	// 	toggle = false;
 	// }
 	// highlighted.toggleClass("highlighted", toggle).addClass('touchedNow');
-	highlighted.addClass(['highlighted', 'highlightedNow', 'touchedNow']).addClass('touchedNow');
+	highlighted.addClass(['highlighted', 'highlightedNow', 'touchedNow']);
 
 	// var map = all.map(function(i,e){return $(e).hasClass("highlighted") ? e.textContent : notHighlightedSymbol}).get().join("");
 	// taskElement.find("input.charsMap").val(map);
@@ -118,7 +118,7 @@ function highlightAreas_unhighlightArea(me, id) {
 	var all = taskElement.data("allSelChars");
 	var groups = runningGroupArray(all, function(each){ return $(each).hasClass("highlighted") });
 	var myGroup = groups.find(function(each){return _.includes(each, me)})
-	$(myGroup).removeClass("highlighted").addClass('touchedNow');
+	$(myGroup).removeClass(['highlighted', 'highlightedNow']).addClass('touchedNow');
 
 	highlightAreas_scan(taskElement);
 
