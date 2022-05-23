@@ -65,24 +65,24 @@ server {
 
 		{% include 'cached_locations.j2' %}
 
-		# P2P Server of peerjs
-		# See https://github.com/peers/peerjs-server
-		location /peerjs/ {
-				proxy_pass	 http://127.0.0.1:9001/peerjs/;
-				# proxy_pass_request_headers			on;
-				# proxy_set_header Host						 $host;
-				# proxy_set_header X-Forwarded-For $remote_addr;
+		# # P2P Server of peerjs
+		# # See https://github.com/peers/peerjs-server
+		# location /peerjs/ {
+		# 		proxy_pass	 http://127.0.0.1:9001/peerjs/;
+		# 		# proxy_pass_request_headers			on;
+		# 		# proxy_set_header Host						 $host;
+		# 		# proxy_set_header X-Forwarded-For $remote_addr;
 
-				# WebSocket proxying, see https://nginx.org/en/docs/http/websocket.html
-				proxy_http_version 1.1;
-				proxy_set_header Upgrade $http_upgrade;
-				proxy_set_header Connection $connection_upgrade;
-				proxy_set_header Host $host;
-				proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		# 		# WebSocket proxying, see https://nginx.org/en/docs/http/websocket.html
+		# 		proxy_http_version 1.1;
+		# 		proxy_set_header Upgrade $http_upgrade;
+		# 		proxy_set_header Connection $connection_upgrade;
+		# 		proxy_set_header Host $host;
+		# 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
-        # proxy_set_header X-Forwarded-Proto https;
-        # proxy_redirect off;
-		}
+    #     # proxy_set_header X-Forwarded-Proto https;
+    #     # proxy_redirect off;
+		# }
 
 
 		# Websockets server

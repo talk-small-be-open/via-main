@@ -68,7 +68,7 @@
       owner: root
       group: root
 
-  - name: logrotate config for seaside gems, peer, turnserver etc.
+  - name: logrotate config for seaside gems, etc.
     become_user: root
     template:
       src: files/logrotate/via.j2
@@ -169,7 +169,7 @@
         - 'goaccess'
         - 'tmux'
         - 'lnav'
-        - 'coturn'
+#        - 'coturn'
         - 'mailutils' # for ngxblocker to send emails
 #        - 'jmeter' # for integration tests
         - 'openjdk-11-jre' # for jmeter (jmeter from apt is outdated)
@@ -246,19 +246,18 @@
       - restart PHP
 
 
-  - name: Install peerjs npm package
-    npm:
-      name: peer
-      version: 0.5.3
-      global: yes
-  - name: Custom log file for peerjs
-    copy:
-      content: "PeerJS log file"
-      force: no
-      dest: /var/log/peerjs.log
-      owner: '{{remoteUser}}'
-      group: '{{remoteUser}}'
-#      mode: 
+  # - name: Install peerjs npm package
+  #   npm:
+  #     name: peer
+  #     version: 0.5.3
+  #     global: yes
+  # - name: Custom log file for peerjs
+  #   copy:
+  #     content: "PeerJS log file"
+  #     force: no
+  #     dest: /var/log/peerjs.log
+  #     owner: '{{remoteUser}}'
+  #     group: '{{remoteUser}}'
 
 
   # Talkmaster websockets server
@@ -601,31 +600,31 @@
       mode: 0600
   
 
-  #
-  # TURN Server (coturn)
-  #
-  - name: TURN config
-    template:
-      backup: yes
-      src: "files/coturn/turnserver.conf.j2"
-      dest: "/etc/turnserver.conf"
-      owner: 'root'
-    notify:
-      - restart coturn
-  - name: coturn TURN server enabled
-    lineinfile:
-      path: /etc/default/coturn
-      line: "TURNSERVER_ENABLED=1"
-    notify:
-      - restart coturn
-  - name: coturn init.d DONT start with verbose
-    lineinfile:
-      state: present
-      path: /etc/init.d/coturn
-      regexp: '^DAEMON_ARGS=.*'
-      line: 'DAEMON_ARGS="-c /etc/turnserver.conf -o"'
-    notify:
-      - restart coturn
+  # #
+  # # TURN Server (coturn)
+  # #
+  # - name: TURN config
+  #   template:
+  #     backup: yes
+  #     src: "files/coturn/turnserver.conf.j2"
+  #     dest: "/etc/turnserver.conf"
+  #     owner: 'root'
+  #   notify:
+  #     - restart coturn
+  # - name: coturn TURN server enabled
+  #   lineinfile:
+  #     path: /etc/default/coturn
+  #     line: "TURNSERVER_ENABLED=1"
+  #   notify:
+  #     - restart coturn
+  # - name: coturn init.d DONT start with verbose
+  #   lineinfile:
+  #     state: present
+  #     path: /etc/init.d/coturn
+  #     regexp: '^DAEMON_ARGS=.*'
+  #     line: 'DAEMON_ARGS="-c /etc/turnserver.conf -o"'
+  #   notify:
+  #     - restart coturn
     
   #    
   # JMeter
