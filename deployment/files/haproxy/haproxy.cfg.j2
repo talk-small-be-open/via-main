@@ -6,6 +6,10 @@ global
 		group haproxy
 		daemon
 
+		# For debugging on the commandline with socket access (see http://cbonte.github.io/haproxy-dconv/1.8/management.html#9.3)
+		#stats socket /var/run/haproxy.sock mode 600 level admin
+    #stats timeout 2m
+
 defaults
 		log			global
 		mode		http
@@ -68,6 +72,8 @@ frontend stats
 
 backend gems
 		balance roundrobin
+
+		# maxconnrate 5 # per second
 		default-server check inter 30s maxconn 1 maxqueue 10 non-stick
 
 		# # Save real ip in the table

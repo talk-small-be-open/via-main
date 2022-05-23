@@ -148,7 +148,7 @@
 
 		.viewerBox {
 				position: absolute;
-				border: 1px solid rgb(239,237,240);
+				border: 3px solid black;
 				display: none;
 				overflow: hidden;
 				background-color: white;
@@ -322,13 +322,16 @@ div.VIAAdminAssetsComponent, div.VIAAdminAssetsUsageComponent {
 				// }
 				td.assetInfo {
 						word-break: break-word;
+						div.assetTitle {
+								margin-bottom: 0.5em;
+						}
 						div.publicComment {
 								color: green;
 						}
 						div.internalComment {
 								color: red;
 						}
-						div.fileOnDisk, div.creationDate {
+						div.fileOnDisk, div.creationDate, div.uuid {
 								.muted();
 								font-family: monospace;
 						}

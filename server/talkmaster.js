@@ -23,7 +23,12 @@ const wss = new WebSocket.Server({ port: 9002 });
 
 var rooms = {};
 
-console.log('Talkmaster server started...');
+
+function log(string) {
+	console.log('[' + new Date().toUTCString() + ']', string);
+}
+
+log('Talkmaster server started...');
 
 // Helper to remove an item in an array. Hi JavaScript, cheers from Smalltalk, grow up!
 function removeItemAll(arr, value) {
@@ -41,7 +46,7 @@ function removeItemAll(arr, value) {
 // Server waits for incoming connections
 wss.on('connection', function connection(ws, request) {
 
-//	console.log(request.url);
+//	log(request.url);
 	
 	const requestUrl = new URL(request.url, 'wss://dummy'); // url.parse(request.url)
   const pathName = requestUrl.pathname;
@@ -54,11 +59,11 @@ wss.on('connection', function connection(ws, request) {
 
 	// Block connections without credential
 	if (hash != incomingHash) {
-		console.log('Not authorized. Got ' + incomingHash + ' should ' + hash);
+		log('Not authorized. Got ' + incomingHash + ' should ' + hash);
 		return;
 	}
 
-	console.log('Joining room: ' + roomName);
+	log('Joining room: ' + roomName);
 
 	// Create room and add connection
 	if (!rooms[roomName]) {rooms[roomName] = [ ] };
@@ -66,12 +71,12 @@ wss.on('connection', function connection(ws, request) {
 	
   ws.on('message', function incoming(data) {
 
-		console.log('In: ' + data);
+		log('In: ' + data);
 
 		clients = rooms[roomName]; // TODO without myself ws
     clients.forEach(function each(client) {
       if ((client != ws) && (client.readyState === WebSocket.OPEN)) {
-				console.log('Fwd');
+				log('Fwd');
         client.send(data);
       }
     });
@@ -79,13 +84,13 @@ wss.on('connection', function connection(ws, request) {
 
 	
 	ws.on('close', function closing(){
-		console.log('Closing connection');
+		log('Closing connection');
 		var room = rooms[roomName];
 
 		removeItemAll(room, ws);
 
-		if (rooms.length == 0) {
-			console.log('Deleting empty room');
+		if (room.length == 0) {
+			log('Deleting empty room');
 			delete rooms[roomName];
 		}
 	});

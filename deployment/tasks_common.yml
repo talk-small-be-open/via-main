@@ -690,6 +690,12 @@
       regexp: 'RemoveIPC='
       line: 'RemoveIPC=no'
 
+  - name: not too much space for journald
+    lineinfile:
+      state: present
+      path: /etc/systemd/journald.conf
+      regexp: 'SystemMaxUse='
+      line: 'SystemMaxUse=200M'
 
 
     
