@@ -13,7 +13,7 @@ if [ $? -eq 0 ]; then
 fi
                                  
 # create a new session, named $SESSION, and detach from it
-$tmux new-session -d -s $SESSION 'goaccess --log-format=COMBINED /var/log/nginx/access.log'
+$tmux new-session -d -s $SESSION 'goaccess --log-format=COMBINED --no-query-string --ignore-crawlers /var/log/nginx/access.log'
 
 # $tmux new-window    -t $SESSION:0 'goaccess --log-format=COMBINED /var/log/nginx/access.log'
 # $tmux select-layout main-horizontal
