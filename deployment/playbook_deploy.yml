@@ -40,15 +40,28 @@
   - import_tasks: tasks_common.yml
     when: gemstoneOnly is not defined
 
-  - name: Stopping VIA's web instances (gems)
-    shell: monit -g via_gemstone_gems stop
+
+  # This should wait for the gems to be stopped? Poor documented ansible module
+  - name: Stopping all gems
+    loop: "{{ via.gemPorts }}"
+    monit:
+      name: via_gemstone_gem_{{item}}
+      state: stopped
+  
+  # - name: Stopping VIA's web instances (gems)
+  #   shell: monit -g via_gemstone_gems stop
 
   - name: Ensure GemStone stone is running
     shell: monit start via_gemstone_stone
 
   - name: Ensure GemStone netldi is running
     shell: monit start via_gemstone_netldi
-      
+
+  # Poor solution to wait
+  - name: Sleep for 10 seconds, ensure stopped gems
+    ansible.builtin.wait_for:
+      timeout: 10
+  
   - name: Do GemStone backup before deploy
     when: skipBackup is not defined
     become_user: "{{remoteUser}}"

@@ -38,8 +38,9 @@
     name: mosh
 
 # Allow coturn, TURN server
+# TODO: disable, obsolete
 - ufw:
-    rule: allow
+    rule: deny
     name: Turnserver
 
   
