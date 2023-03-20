@@ -5,12 +5,13 @@
 # Usage: ./deploy.sh <name of instance>
 # Example: ./deploy.sh production
 
-while getopts "gs" opt; do
+while getopts "gsC" opt; do
 		case ${opt} in
-				g ) # process option h
-						GEMSTONE_ONLY="-e gemstoneOnly=true"
+				g ) GEMSTONE_ONLY="-e gemstoneOnly=true"
 						;;
 				s ) SKIP_BACKUP="-e skipBackup=true"
+						;;
+				C ) CHECK_ONLY="--check"
 						;;
 				\? ) echo "Usage: cmd [-g = gemstone only] [-s = skip backup]"
 						 exit
@@ -21,4 +22,4 @@ done
 shift $((OPTIND-1))
 
 # NOT needed: --ask-become-pass
-ansible-playbook -i ./site/inventory_$1.yml -e instanceName=$1 $GEMSTONE_ONLY $SKIP_BACKUP playbook_deploy.yml
+ansible-playbook $CHECK_ONLY -i ./site/inventory_$1.yml -e instanceName=$1 $GEMSTONE_ONLY $SKIP_BACKUP playbook_deploy.yml

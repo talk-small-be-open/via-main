@@ -41,15 +41,8 @@
     when: gemstoneOnly is not defined
 
 
-  # This should wait for the gems to be stopped? Poor documented ansible module
-  - name: Stopping all gems
-    loop: "{{ via.gemPorts }}"
-    monit:
-      name: via_gemstone_gem_{{item}}
-      state: stopped
-  
-  # - name: Stopping VIA's web instances (gems)
-  #   shell: monit -g via_gemstone_gems stop
+  - name: Stopping VIA's web instances (gems)
+    shell: monit -g via_gemstone_gems stop
 
   - name: Ensure GemStone stone is running
     shell: monit start via_gemstone_stone
