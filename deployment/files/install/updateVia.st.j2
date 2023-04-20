@@ -7,11 +7,6 @@ VIAApplicationManager current
 
 db := VIADatabase current.
 
-"Ensure configuration"
-db
-	propertyAt: #turnServerSecret put: '{{via.turnServer.secret}}';
-	propertyAt: #serverAddress put: '{{via.serverAddress}}'.
-
 {% include 'configuration.st.j2' %}
 
 "Enable/Disable seaside development tools"

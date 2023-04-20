@@ -37,12 +37,6 @@
     rule: allow
     name: mosh
 
-# Allow coturn, TURN server
-# TODO: disable, obsolete
-- ufw:
-    rule: deny
-    name: Turnserver
-
   
 - name: Allow all access to tcp port 80
   ufw:
@@ -73,7 +67,7 @@
     - 192.168.0.0/16
 
 # TODO: Maybe only in beta mode?    
-- name: Allow access to iperf3
-  ufw:
-    rule: allow
-    port: "5201"
+# - name: Allow access to iperf3
+#   ufw:
+#     rule: allow
+#     port: "5201"

@@ -71,7 +71,14 @@
   - name: apt packages update
     apt:
       update_cache: yes
-     
+
+  - name: Ensure early most basic apt packages for installation
+    apt:
+      name:
+        - 'git'
+      state: present
+
+    
   - name: Create basic installation folders
     file:
       path: "{{item}}"
@@ -107,8 +114,6 @@
 
 
   - include_tasks: tasks_git_update.yml    
-            
-    
 
 
   #
@@ -164,7 +169,9 @@
   - name: Get GsDevKit from github
     become_user: "{{remoteUser}}"
     git:
-      repo: "https://github.com/GsDevKit/GsDevKit_home.git"
+# TODO     repo: "https://github.com/GsDevKit/GsDevKit_home.git"
+# includes Ubuntu 22.04:
+      repo: "https://github.com/pdebruic/GsDevKit_home"
       dest: "/opt/GsDevKit_home"
       accept_hostkey: yes
       update: yes
@@ -191,31 +198,42 @@
 
 
     
-  - local_action: stat path=files/gemstone/GemStone64Bit3.4.5-x86_64.Linux.zip
-    when: isOnLocalNetwork is defined
-    register: gemstone_zip_file_local
-    become: no
+  # - local_action: stat path=files/gemstone/GemStone64Bit3.4.5-x86_64.Linux.zip
+  #   when: isOnLocalNetwork is defined
+  #   register: gemstone_zip_file_local
+  #   become: no
     
-  - name: Try to avoid big download and take GemStone locally
-    when: isOnLocalNetwork is defined and isOnLocalNetwork == "true" and gemstone_zip_file_local.stat.exists 
-    copy:
-      src: "files/gemstone/GemStone64Bit3.4.5-x86_64.Linux.zip"
-      dest: "/opt/GsDevKit_home/shared/downloads/zip/GemStone64Bit3.4.5-x86_64.Linux.zip"
-      owner: "{{remoteUser}}"
-      group: "{{remoteUser}}"
-      mode: 0666
+  # - name: Try to avoid big download and take GemStone locally
+  #   when: isOnLocalNetwork is defined and isOnLocalNetwork == "true" and gemstone_zip_file_local.stat.exists 
+  #   copy:
+  #     src: "files/gemstone/GemStone64Bit3.4.5-x86_64.Linux.zip"
+  #     dest: "/opt/GsDevKit_home/shared/downloads/zip/GemStone64Bit3.4.5-x86_64.Linux.zip"
+  #     owner: "{{remoteUser}}"
+  #     group: "{{remoteUser}}"
+  #     mode: 0666
     
   - name: Create stone
     become_user: "{{remoteUser}}"
-    shell: "createStone {{stoneName}} {{via.gemStone.version}}"
+    ignore_errors: yes # Strange: Ansibles thinks that it fails, but it doesnt
+    shell: 
+#      warn: false
+      cmd: "createStone {{stoneName}} {{via.gemStone.version}} > /tmp/stone_install.log 2>&1"
     args:
       chdir: "/opt/GsDevKit_home"
       creates: "/opt/GsDevKit_home/server/stones/{{stoneName}}"
 
+  - name: Update with our own gem.conf for gems
+    when: gemstone_is_installed is defined
+    template:
+      src: "files/gemstone/gem.conf.j2"
+      dest: "/opt/GsDevKit_home/server/stones/{{stoneName}}/gem.conf"
+      owner: "{{remoteUser}}"
+      mode: 0644
 
-  - name: Overwrite with our own gem.conf
-    copy:
-      src: "files/gemstone/gem.conf"
+  - name: Update with our own stone.conf for the stone
+    when: gemstone_is_installed is defined
+    template:
+      src: "files/gemstone/gem.conf.j2"
       dest: "/opt/GsDevKit_home/server/stones/{{stoneName}}/{{stoneName}}.conf"
       owner: "{{remoteUser}}"
       mode: 0644
@@ -232,9 +250,9 @@
     when: monitconfig1.changed or monitconfig2.changed
     shell: monit reload
     
-  - name: Flush Monticello cache
-    become_user: "{{remoteUser}}"
-    shell: "todeIt {{stoneName}} mr flush"
+  # - name: Flush Monticello cache
+  #   become_user: "{{remoteUser}}"
+  #   shell: "todeIt {{stoneName}} mr flush"
 
   - name: Copy our own STON file for the Seaside project
     copy:
@@ -244,18 +262,22 @@
       mode: 0644
 
 
+  # Needs to be done after createStone, strange
+  - name: Restart stone
+    become_user: "{{remoteUser}}"
+    shell: "stopStone -b {{stoneName}} && startStone -b {{stoneName}}"
+    args:
+      chdir: "/opt/GsDevKit_home"
+      
 
   - name: Check if Via is already installed
     stat: 
       path: "{{via.installationPath}}/install/INSTALLATION_IS_DONE.log"
     register: installation_is_done_file
 
-  # TODO! WIeder reinnehmen!!! Nur für 321 update auskommentiert!
-  # TBD: Bei 321 migration rauskommentieren
   - set_fact:
       via_is_installed: True
     when: installation_is_done_file.stat.exists == true
-
 
 
     
@@ -291,14 +313,6 @@
     args:
       chdir: "/opt/GsDevKit_home"
 
-  # TODO
-  # - name: Backup so far
-  #   become_user: "{{remoteUser}}"
-  #   shell: "todeBackup {{stoneName}} seaside.dbf"
-  #   args:
-  #     chdir: "/opt/GsDevKit_home"
-  #     creates: "/opt/GsDevKit_home ...?
-    
   - name: Add VIA site project into tODE
     when: via_is_installed is undefined
     become_user: "{{remoteUser}}"
@@ -312,7 +326,8 @@
     shell: "todeIt {{stoneName}} project clone --https --local --checkout=master {{via.siteName}}"
     args:
       chdir: "/opt/GsDevKit_home"
-      creates: "/opt/GsDevKit_home/shared/repos/{{via.siteRepository.name}}"
+#      creates: "/opt/GsDevKit_home/shared/repos/{{via.siteRepository.name}}"
+      creates: "/opt/GsDevKit_home/shared/repos/via-site-*"
       
   - name: Update VIA site project (pull)
     when: via_is_installed is undefined
@@ -364,6 +379,14 @@
   #
   # Start services
   #
+  - name: Ensure haproxy is running
+    service:
+      name: haproxy
+      state: restarted
+  - name: Ensure nginx is running
+    service:
+      name: nginx
+      state: restarted
   - name: ensure monit enabled on boot
     service:
       name: monit

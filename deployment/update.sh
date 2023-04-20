@@ -8,4 +8,4 @@ set -x
 # Example: ./update.sh production
 
 # NOT needed: --ask-become-pass
-ansible-playbook "${@:2}" -i site/inventory_$1.yml -e instanceName=$1 playbook_update.yml
+ansible-playbook "${@:2}" --ask-become-pass -i site/inventory_$1.yml -e instanceName=$1 playbook_update.yml

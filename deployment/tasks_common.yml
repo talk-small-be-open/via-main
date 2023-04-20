@@ -11,30 +11,35 @@
     file:
       dest: "/home/{{remoteUser}}/stone"
       src: "/opt/GsDevKit_home/server/stones/{{stoneName}}"
+      force: yes
       state: link
 
   - name: Create working user convenience symlink for via_base
     file:
       dest: "/home/{{remoteUser}}/vb"
       src: "{{via.installationPath}}/via_base"
+      force: yes
       state: link
 
   - name: Create working user convenience symlink for via_site
     file:
       dest: "/home/{{remoteUser}}/vs"
       src: "{{via.installationPath}}/via_site"
+      force: yes
       state: link
 
   - name: Create working user convenience symlink for shell cockpit
     file:
       dest: "/home/{{remoteUser}}/vc.sh"
       src: "{{via.installationPath}}/via_base/server/via_cockpit.sh"
+      force: yes
       state: link
 
   - name: Create working user convenience symlink for start tode client (X11)
     file:
       dest: "/home/{{remoteUser}}/ot.sh"
       src: "{{via.installationPath}}/via_base/server/open_tode.sh"
+      force: yes
       state: link
       
   #
@@ -141,6 +146,7 @@
   - name: Install basic apt packages
     apt:
       name:
+        - 'cron' # some minimal servers dont have it preinstalled
         - 'logrotate'
         - 'ufw'
         - 'unattended-upgrades'
@@ -161,7 +167,10 @@
         - 'pigz'
         - 'cronic'
         - 'duplicity'
-        - 'python-boto'
+        - 'gettext' # duplicity mit S3 exoscale
+        - 'python3-future' # duplicity mit S3 exoscale
+        - 'python3-fasteners' # duplicity mit S3 exoscale
+        - 'python3-boto3' # duplicity mit S3 exoscale
         - 'iperf3'
         - 'figlet'
 # neu mit eigenem apt repo        - 'nodejs'
@@ -173,9 +182,9 @@
         - 'mailutils' # for ngxblocker to send emails
 #        - 'jmeter' # for integration tests
         - 'openjdk-11-jre' # for jmeter (jmeter from apt is outdated)
-#         - 's3cmd' # For S3backup
         - 'iftop' #network monitoring
         - 'iotop'
+        - 'haproxy'
       state: present
 
       
@@ -185,9 +194,9 @@
     register: result
     
   # TODO: Make simpler, use the official version, if that will generate PDFs without qt-errors
-  - name: Install special version of wkhtmltopdf (be aware for ubuntu 18.04)
+  - name: Install special version of wkhtmltopdf (be aware for ubuntu 22.04)
     apt:
-      deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+      deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
     when: result.stat.exists == false
 
   - name: wkhtmltopdf link for binary in /usr/bin
@@ -218,18 +227,19 @@
 
 
   # NODE JS
+  # See for example: https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-22-04
   - name: "Add nodejs apt key"
     apt_key:
       url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
       state: present
-  - name: "Add nodejs 14.x ppa for apt repo (for Ubuntu 18 bionic)"
+  - name: "Add nodejs 14.x ppa for apt repo (for Ubuntu 22 jammy)"
     apt_repository:
-      repo: deb https://deb.nodesource.com/node_14.x bionic main
+      repo: deb https://deb.nodesource.com/node_14.x jammy main
       update_cache: yes
   - name: "Install nodejs"
     apt:
       update_cache: yes
-      name: nodejs=14.17.*
+      name: nodejs=14.*
       state: present
 
     
@@ -239,7 +249,7 @@
   - name: via php.ini settings
     copy:
       src: files/nginx/php.ini
-      dest: /etc/php/7.2/fpm/conf.d/99-via.ini
+      dest: /etc/php/8.1/fpm/conf.d/99-via.ini
       owner: 'root'
       group: 'root'
     notify:
@@ -281,12 +291,12 @@
   #
   # HAPROXY LOAD BALANCER
   #
-  - name: Add apt repo for haproxy
-    apt_repository:
-      repo: ppa:vbernat/haproxy-1.8
-  - name: haproxy package
-    apt:
-      name: haproxy=1.8.*
+  # - name: Add apt repo for haproxy
+  #   apt_repository:
+  #     repo: ppa:vbernat/haproxy-1.8
+  # - name: haproxy package
+  #   apt:
+  #     name: haproxy=1.8.*
   - name: haproxy.cfg file
     template:
       src: files/haproxy/haproxy.cfg.j2
@@ -382,12 +392,14 @@
       mode: 0640
     
   - name: options-ssl-nginx.conf file
+    when: via.useSsl
     copy:
       src: files/nginx/options-ssl-nginx.conf
       dest: /etc/letsencrypt/options-ssl-nginx.conf
       owner: 'root'
       group: 'root'
   - name: ssl-dhparams.pem file
+    when: via.useSsl
     copy:
       src: files/nginx/ssl-dhparams.pem
       dest: /etc/letsencrypt/ssl-dhparams.pem
@@ -640,7 +652,7 @@
     shell:
       warn: false
       cmd: |
-        curl https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.4.1.tgz | tar -C /opt/jmeter --strip-components=1 -xz
+        curl https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.4.3.tgz | tar -C /opt/jmeter --strip-components=1 -xz
     args:
       creates: "/opt/jmeter/bin/jmeter"
 

@@ -8,6 +8,7 @@ ifNil: [
   "Temporary Seaside GemStone bug fix. Re-base WADynamicVariable
 	to GRNotificationBasedDynamicVariable instead GRDynamicVariable"
 " Not needed anymore I guess (3.9.2020)
+delete it if Aurea Bull was installing correct
 GRNotificationBasedDynamicVariable subclass: 'WADynamicVariable'
 	instVarNames: #()
 	classVars: #()
@@ -26,13 +27,14 @@ GRNotificationBasedDynamicVariable subclass: 'WADynamicVariable'
 
 	"First time configuration"
 	db
-		propertyAt: #fileStoragePath put: '{{via.installationPath}}/via_base/web_root';
-		propertyAt: #tmpPath put: '{{via.installationPath}}/via_base/main/tmp'.
+		propertyAt: #webRootPath put: '{{via.installationPath}}/via_base/web_root';
+		propertyAt: #tmpPath put: '{{via.installationPath}}/via_base/tmp'.
 
 	{% include 'configuration.st.j2' %}
 
 
-	"TODO: Set domain of the first website"
+	"Set domain of the first website"
+	db websites first domain: '{{via.appDomains[0]}}'.
 
 	"Enable/Disable seaside development tools"
 	(WAAdmin canUnderstand: #developmentToolsEnabled) ifTrue: [

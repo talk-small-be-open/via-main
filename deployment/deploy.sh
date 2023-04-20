@@ -13,7 +13,7 @@ while getopts "gsC" opt; do
 						;;
 				C ) CHECK_ONLY="--check"
 						;;
-				\? ) echo "Usage: cmd [-g = gemstone only] [-s = skip backup]"
+				\? ) echo "Usage: cmd [-g = gemstone only] [-s = skip backup] [-C = check only]"
 						 exit
 						 ;;
 		esac
@@ -21,5 +21,5 @@ done
 
 shift $((OPTIND-1))
 
-# NOT needed: --ask-become-pass
-ansible-playbook $CHECK_ONLY -i ./site/inventory_$1.yml -e instanceName=$1 $GEMSTONE_ONLY $SKIP_BACKUP playbook_deploy.yml
+# NOT needed?: --ask-become-pass
+ansible-playbook $CHECK_ONLY --ask-become-pass -i ./site/inventory_$1.yml -e instanceName=$1 $GEMSTONE_ONLY $SKIP_BACKUP playbook_deploy.yml

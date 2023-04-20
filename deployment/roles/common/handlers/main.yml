@@ -2,7 +2,7 @@
 
 - name: restart PHP
   service:
-    name: php7.2-fpm
+    name: php8.1-fpm
     enabled: yes
     state: restarted
 

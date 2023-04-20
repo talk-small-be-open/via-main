@@ -1,6 +1,6 @@
 - name: Ensure PHP is running
   service:
-    name: php7.2-fpm
+    name: php8.1-fpm
     state: started
 
 - name: Ensure haproxy is running

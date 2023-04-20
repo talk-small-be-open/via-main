@@ -8,6 +8,15 @@
     update: yes
     force: no
 
+- name: git repo VIA site code
+  become_user: "{{remoteUser}}"
+  git:
+    repo: "{{via.siteRepository.gitUrl}}"
+    dest: "{{via.installationPath}}/via_site"
+    accept_hostkey: yes
+    update: yes
+    force: no
+
 - name: Sticky folder permissions for webserver (www-data)
   file:
     path: "{{item}}"
@@ -32,11 +41,3 @@
     - "{{via.installationPath}}/via_site/web_root"
 
   
-- name: git repo VIA site code
-  become_user: "{{remoteUser}}"
-  git:
-    repo: "{{via.siteRepository.gitUrl}}"
-    dest: "{{via.installationPath}}/via_site"
-    accept_hostkey: yes
-    update: yes
-    force: no
