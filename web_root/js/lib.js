@@ -34,6 +34,7 @@ checkCookiesAllowed();
 function saveScroll(id) {
 	if (isCookiesNotAllowed()) { return }
 	
+	// Should not use jQuery here (?)
 	//var y = $(document).scrollTop();
 	var y = window.pageYOffset || document.documentElement.scrollTop;
 
@@ -51,6 +52,8 @@ function loadScroll(id) {
 
 	var y = Cookies.get("page_scroll_" + id);
 	if (!y) {return}
+
+	// Should not use jQuery here (?)
 	//$(document).scrollTop(y);
 	//	document.documentElement.scrollTop = document.body.scrollTop = y;
 	window.scroll({behavior: 'auto', top: y});
