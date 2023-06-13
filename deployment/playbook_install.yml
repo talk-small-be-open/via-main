@@ -180,7 +180,7 @@
   - name: GIVE user sudo permission without password. Will be removed later.
     copy:
       content: '{{remoteUser}} ALL=(ALL) NOPASSWD:ALL'
-      dest: /etc/sudoers.d/mediaclue
+      dest: /etc/sudoers.d/via
       owner: root
       group: root
       
@@ -193,7 +193,7 @@
 
   - name: REMOVE user sudo permission without password.
     file:
-      path: /etc/sudoers.d/mediaclue
+      path: /etc/sudoers.d/via
       state: absent
 
 

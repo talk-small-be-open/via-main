@@ -543,6 +543,14 @@
       minute: "0"
       hour: "2"
       job: "cd {{via.installationPath}}/via_base/server && cronic ./executeSmalltalk.sh {{stoneName}} \"VIAApplicationManager current runNightlyTasks\" "
+  - name: Trigger via weekly
+    cron:
+      name: "Weekly trigger {{stoneName}}"
+      user: "{{remoteUser}}"
+      minute: "0"
+      hour: "23"
+      weekday: "0"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./executeSmalltalk.sh {{stoneName}} \"VIAApplicationManager current runWeeklyTasks\" "
   - name: Backup cron job
     cron:
       name: "Backup {{stoneName}}"
