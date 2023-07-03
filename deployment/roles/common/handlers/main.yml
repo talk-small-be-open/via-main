@@ -25,12 +25,6 @@
     state: reloaded #dont restarted
     use: sysvinit
 
-# - name: restart coturn
-#   service:
-#     name: coturn
-#     enabled: yes
-#     state: restarted
-    
 - name: create postfix aliases
   shell: newaliases
 

@@ -28,7 +28,8 @@ GRNotificationBasedDynamicVariable subclass: 'WADynamicVariable'
 	"First time configuration"
 	db
 		propertyAt: #webRootPath put: '{{via.installationPath}}/via_base/web_root';
-		propertyAt: #tmpPath put: '{{via.installationPath}}/via_base/tmp'.
+		propertyAt: #tmpPath put: '{{via.installationPath}}/via_base/tmp';
+		propertyAt: #exportStoragePath put: '{{via.installationPath}}/export'.
 
 	{% include 'configuration.st.j2' %}
 

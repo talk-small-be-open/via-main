@@ -25,6 +25,15 @@
 	delaycompress
 }
 
+{{via.installationPath}}/log/*.log {
+	copytruncate
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+}
+
 # /var/log/peerjs.log {
 # 	copytruncate
 # 	daily
