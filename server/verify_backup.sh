@@ -5,6 +5,8 @@ set -euo pipefail
 
 STONE_NAME=$1
 BACKEND=${2:-}
+ENDPOINT=${3:-}
+OPTIONS=${4:-}
 
 #VERBOSE=false
 # while getopts "v" opt; do
@@ -33,7 +35,8 @@ fi
 
 # Verify the GemStone DB
 TARGET=$BACKEND/via_db
-duplicity verify --verbosity warning --no-encryption --include "**/via_backup.dbf.gz" --exclude "**/*" $TARGET $GS_HOME/server/stones/$STONE_NAME/backups 
+duplicity verify --verbosity warning --no-encryption --include "**/via_backup.dbf.gz" --exclude "**/*" --s3-endpoint-url $ENDPOINT $OPTIONS $TARGET $GS_HOME/server/stones/$STONE_NAME/backups 
+
 
 # Not verifying assets, uses lot of perfomance
 # # Assets
