@@ -10,7 +10,7 @@ set -e
 
 # vars
 SERVER=$1
-USER=$2
+SERVER_USER=$2
 STONE=$3
 
 ASSETS_PATH=/opt/via/via_base/web_root/assets/
@@ -40,11 +40,12 @@ fi
 
 # Copy the extent from server
 echo "Copying the GemStone extent database file ..."
-scp -C $USER@$SERVER:~/stone/extents/extent0.dbf $LOCAL_EXTENT
+scp -C $SERVER_USER@$SERVER:~/stone/extents/extent0.dbf $LOCAL_EXTENT
 
 # rsync asset files, ensure no deletion
 echo "Syncing the assets ..."
-rsync -rlptgoD --progress --compress --usermap=$USER:$MYSELF $USER@$SERVER:$ASSETS_PATH $ASSETS_PATH
+rsync -rlptgoD --progress --compress --usermap=$SERVER_USER:$MYSELF $SERVER_USER@$SERVER:$ASSETS_PATH $ASSETS_PATH
 
+# TODO maybe: startStone -N once?
 
-echo "Finished. You might want to do this manually: Copy the backup credentials, ..."
+echo "Successfully finished. You might want to do this manually: Copy the backup credentials, via_start.sh, ..."
