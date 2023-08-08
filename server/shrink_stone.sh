@@ -88,5 +88,5 @@ sleep 5
 echo "Compressing the backup dbf-file to save space"
 pushd $STONE_DIR/extents/
 [ -f "_before_shrink_extent0.dbf.gz" ] && mv --backup=numbered _before_shrink_extent0.dbf.gz _before_shrink_extent0.dbf.gz.bak
-nice -n 10 gzip _before_shrink_extent0.dbf
+nice pigz _before_shrink_extent0.dbf
 popd
