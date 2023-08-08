@@ -622,7 +622,7 @@
 #    no_log: true
     copy:
       force: false
-      content: "# TODO: Write your duplicity keys in here, example for S3: export AWS_ACCESS_KEY_ID=... and export AWS_SECRET_ACCESS_KEY=..."
+      content: "# Write your duplicity keys in here, example for S3: export AWS_ACCESS_KEY_ID=... and export AWS_SECRET_ACCESS_KEY=... and AWS_DEFAULT_REGION=..."
       dest: "{{via.installationPath}}/.duplicity.cred"
       owner: "{{remoteUser}}"
       group: "{{remoteUser}}"
@@ -653,7 +653,7 @@
   #
   - name: Check if GemStone is already installed
     stat: 
-      path: "/opt/GsDevKit_home/server/stones/{{stoneName}}/{{stoneName}}.conf"
+      path: "/opt/GsDevKit_home/server/stones/{{stoneName}}/gem.conf"
     register: gemstone_exists
     tags:
     - gemstone_keyfile
