@@ -14,6 +14,7 @@ SERVER_USER=$2
 STONE=$3
 
 ASSETS_PATH=/opt/via/via_base/web_root/assets/
+REPOS_PATH=/opt/GsDevKit_home/shared/repos/
 MYSELF=$(whoami)
 
 read -n 1 -p "GemStone on other server is stopped? y/n" SELECTION
@@ -35,7 +36,7 @@ if [ -f $LOCAL_EXTENT ]; then
 	 mv --backup $LOCAL_EXTENT $LOCAL_EXTENT.bak
 
 	 # Delete all local tranlogs
-	 rm ~/stone/tranlogs/tranlog*.dbf
+	 rm /home/$MYSELF/stone/tranlogs/tranlog*.dbf
 fi
 
 # Copy the extent from server
@@ -46,6 +47,8 @@ scp -C $SERVER_USER@$SERVER:~/stone/extents/extent0.dbf $LOCAL_EXTENT
 echo "Syncing the assets ..."
 rsync -rlptgoD --progress --compress --usermap=$SERVER_USER:$MYSELF $SERVER_USER@$SERVER:$ASSETS_PATH $ASSETS_PATH
 
-# TODO maybe: startStone -N once?
+# # rsync GemStone code repositories
+# echo "Syncing the code repos ..."
+# rsync -rlptgoD --progress --compress --usermap=$SERVER_USER:$MYSELF $SERVER_USER@$SERVER:$REPOS_PATH $REPOS_PATH
 
 echo "Successfully finished. You might want to do this manually: Copy the backup credentials, via_start.sh, ..."
