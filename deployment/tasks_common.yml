@@ -41,7 +41,36 @@
       src: "{{via.installationPath}}/via_base/server/open_tode.sh"
       force: yes
       state: link
-      
+
+
+
+  # Swap memory
+  # Ensure there is Swap memory (GemStone loves lots of memory)
+  - name: Create swap file
+    command: dd if=/dev/zero of={{swapFilePath}} conv=excl bs=1024 count={{swapFileSizeMb}}k
+    args:
+      creates: "{{swapFilePath}}"
+
+  - name: Change swap file permissions
+    file: path="{{swapFilePath}}" owner=root group=root mode=0600
+
+  - name: "Check swap file type"
+    command: file {{swapFilePath}}
+    register: swapfile
+
+  - name: Make swap file
+    command: "mkswap {{swapFilePath}}"
+    when: (swapfile.stdout is defined) and (swapfile.stdout.find('swap file') == -1)
+
+  - name: Write swap entry in fstab
+    mount: name=none src={{swapFilePath}} fstype=swap opts=sw passno=0 dump=0 state=present
+
+  - name: Mount swap
+    command: "swapon {{swapFilePath}}"
+    when: ansible_swaptotal_mb < 1
+
+
+    
   #
   # Sysctl settings
   #

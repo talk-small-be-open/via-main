@@ -2,3 +2,5 @@
 
 remoteUser: "{{via_user}}"
 stoneName: "{{via.stoneName | default(via.siteName)}}"
+swapFilePath: /mnt/swapfile.swap
+swapFileSizeMb: 4000
