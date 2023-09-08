@@ -66,7 +66,7 @@
 					resize = $ta.css('resize') === 'none' ? 'none' : 'horizontal';
 
 					$ta.data('mirror', $(mirror)).css({
-						overflow: hidden,
+//Andreas Brodbeck						overflow: hidden,
 						overflowY: hidden,
 //						wordWrap: 'break-word',
 						resize: resize
