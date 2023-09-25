@@ -302,7 +302,7 @@
         - "{{stoneName}}"
         - project
         - load
-        - --loads="\`#('Base' 'Core' 'JSON' 'Email' 'Javascript' 'JQuery' 'Production' 'Zinc' 'Tests')\`"
+        - --loads="\`#('Base' 'Core' 'JSON' 'Email' 'Javascript' 'JQuery' 'JQueryUI' 'Production' 'Zinc' 'Tests')\`"
         - Seaside3
 
 
