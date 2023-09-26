@@ -16,7 +16,7 @@
     accept_hostkey: yes
     update: yes
     force: no
-
+    
 - name: Sticky folder permissions for webserver (www-data)
   file:
     path: "{{item}}"
@@ -27,6 +27,7 @@
     group: 'www-data'
   with_items:
     - "{{via.installationPath}}/via_base/web_root"
+    - "{{via.installationPath}}/via_base/web_root/assets"
     - "{{via.installationPath}}/via_site/web_root"
 
 - name: Ensure readable folder permissions for webserver (www-data)
