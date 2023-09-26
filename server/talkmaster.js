@@ -77,7 +77,7 @@ wss.on('connection', function connection(ws, request) {
     clients.forEach(function each(client) {
       if ((client != ws) && (client.readyState === WebSocket.OPEN)) {
 				log('Fwd');
-        client.send(data);
+        client.send(data, {binary: false});
       }
     });
   });

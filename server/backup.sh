@@ -1,10 +1,14 @@
 #!/bin/bash
 set -eo pipefail
 
-# Usage backup.sh stoneName duplicityTarget
+# Usage backup.sh stoneName duplicityTarget endpointUrl
 
-./backup_gemstone_db.sh $1
+STONE=$1
+BACKEND=${2:-}
+ENDPOINT=${3:-}
 
-if [ -n "$2" ]; then
-		./backup_with_duplicity.sh $1 $2
+./backup_gemstone_db.sh $STONE
+
+if [ -n "$BACKEND" ]; then
+		./backup_with_duplicity.sh $STONE "$BACKEND" "$ENDPOINT"
 fi

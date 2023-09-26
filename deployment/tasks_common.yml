@@ -41,7 +41,36 @@
       src: "{{via.installationPath}}/via_base/server/open_tode.sh"
       force: yes
       state: link
-      
+
+
+
+  # Swap memory
+  # Ensure there is Swap memory (GemStone loves lots of memory)
+  - name: Create swap file
+    command: dd if=/dev/zero of={{swapFilePath}} conv=excl bs=1024 count={{swapFileSizeMb}}k
+    args:
+      creates: "{{swapFilePath}}"
+
+  - name: Change swap file permissions
+    file: path="{{swapFilePath}}" owner=root group=root mode=0600
+
+  - name: "Check swap file type"
+    command: file {{swapFilePath}}
+    register: swapfile
+
+  - name: Make swap file
+    command: "mkswap {{swapFilePath}}"
+    when: (swapfile.stdout is defined) and (swapfile.stdout.find('swap file') == -1)
+
+  - name: Write swap entry in fstab
+    mount: name=none src={{swapFilePath}} fstype=swap opts=sw passno=0 dump=0 state=present
+
+  - name: Mount swap
+    command: "swapon {{swapFilePath}}"
+    when: ansible_swaptotal_mb < 1
+
+
+    
   #
   # Sysctl settings
   #
@@ -149,7 +178,7 @@
         - 'cron' # some minimal servers dont have it preinstalled
         - 'logrotate'
         - 'ufw'
-        - 'unattended-upgrades'
+# possibly conflicts with running GemStone        - 'unattended-upgrades'
         - 'monit'
         - 'git'
         - 'imagemagick'
@@ -399,7 +428,16 @@
       owner: root
       group: www-data
       mode: 0640
-    
+
+  - name: Create letsencrypt folder
+    when: via.useSsl
+    file:
+      path: "/etc/letsencrypt"
+      state: directory
+      mode: 0755
+      owner: 'root'
+      group: 'root'
+      
   - name: options-ssl-nginx.conf file
     when: via.useSsl
     copy:
@@ -566,7 +604,7 @@
       user: "{{remoteUser}}"
       minute: "0"
       hour: "3,12"
-      job: "cd {{via.installationPath}}/via_base/server && cronic ./backup.sh {{stoneName}} {{via.backupTarget}}"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./backup.sh {{stoneName}} {{via.backupTarget}} {{via.backupS3Endpoint}}"
   - name: Verifying backup cron job
     cron:
       name: "Verifying backup {{stoneName}}"
@@ -574,7 +612,7 @@
       minute: "0"
       hour: "4"
       day: "*/2"
-      job: "cd {{via.installationPath}}/via_base/server && cronic ./verify_backup.sh {{stoneName}} {{via.backupTarget}}"
+      job: "cd {{via.installationPath}}/via_base/server && cronic ./verify_backup.sh {{stoneName}} {{via.backupTarget}} {{via.backupS3Endpoint}}"
   - name: Cleanup tmp files cron job
     cron:
       name: "Cleanup tmp files of {{stoneName}}"
@@ -618,43 +656,17 @@
   # Backup with duplicity (see also cron job above)
   #
 
-  - name: duplicity credentials
-    when: via.backupPassword is defined
-    no_log: true
+  - name: duplicity credentials, ensure template file
+#    no_log: true
     copy:
-      content: "export FTP_PASSWORD={{via.backupPassword}}"
+      force: false
+      content: "# Write your duplicity keys in here, example for S3: export AWS_ACCESS_KEY_ID=... and export AWS_SECRET_ACCESS_KEY=... and AWS_DEFAULT_REGION=..."
       dest: "{{via.installationPath}}/.duplicity.cred"
       owner: "{{remoteUser}}"
       group: "{{remoteUser}}"
       mode: 0600
   
 
-  # #
-  # # TURN Server (coturn)
-  # #
-  # - name: TURN config
-  #   template:
-  #     backup: yes
-  #     src: "files/coturn/turnserver.conf.j2"
-  #     dest: "/etc/turnserver.conf"
-  #     owner: 'root'
-  #   notify:
-  #     - restart coturn
-  # - name: coturn TURN server enabled
-  #   lineinfile:
-  #     path: /etc/default/coturn
-  #     line: "TURNSERVER_ENABLED=1"
-  #   notify:
-  #     - restart coturn
-  # - name: coturn init.d DONT start with verbose
-  #   lineinfile:
-  #     state: present
-  #     path: /etc/init.d/coturn
-  #     regexp: '^DAEMON_ARGS=.*'
-  #     line: 'DAEMON_ARGS="-c /etc/turnserver.conf -o"'
-  #   notify:
-  #     - restart coturn
-    
   #    
   # JMeter
   # 
@@ -669,7 +681,7 @@
     shell:
       warn: false
       cmd: |
-        curl https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.4.3.tgz | tar -C /opt/jmeter --strip-components=1 -xz
+        curl https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-5.6.tgz | tar -C /opt/jmeter --strip-components=1 -xz
     args:
       creates: "/opt/jmeter/bin/jmeter"
 
@@ -679,7 +691,7 @@
   #
   - name: Check if GemStone is already installed
     stat: 
-      path: "/opt/GsDevKit_home/server/stones/{{stoneName}}/{{stoneName}}.conf"
+      path: "/opt/GsDevKit_home/server/stones/{{stoneName}}/gem.conf"
     register: gemstone_exists
     tags:
     - gemstone_keyfile

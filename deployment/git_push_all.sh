@@ -6,15 +6,15 @@ echo "Dont forget to add new files!"
 pushd ..
 git status
 git commit -a -m "progress"
-git pull --commit --no-edit origin
-git push origin
+git pull --commit --no-edit
+git push
 
 # Site
 pushd ../via_site/
 git status
 git commit -a -m "progress"
-git pull --commit --no-edit origin
-git push origin
+git pull --commit --no-edit
+git push
 
 popd
 popd
