@@ -663,12 +663,16 @@
   #
   - name: Check if GemStone is already installed
     stat: 
-      path: "/opt/GsDevKit_home/server/stones/{{stoneName}}/{{stoneName}}.conf"
+      path: "/opt/GsDevKit_home/server/stones/{{stoneName}}/gem.conf"
     register: gemstone_exists
+    tags:
+    - gemstone_keyfile
 
   - set_fact:
       gemstone_is_installed: True
     when: gemstone_exists.stat.exists == true
+    tags:
+    - gemstone_keyfile
   
   - name: Update with our own gem.conf for gems
     when: gemstone_is_installed is defined
@@ -693,6 +697,8 @@
       dest: "{{via.installationPath}}/install/gemstone.key"
       owner: "{{remoteUser}}"
       mode: 0600
+    tags:
+    - gemstone_keyfile
 
   # Workaround, for a GemStone/systemd bug see https://gemtalksystems.com/data/bugnotes/47499.html
   - name: systemd parameter for GemStone
