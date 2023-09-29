@@ -76,6 +76,8 @@
     apt:
       name:
         - 'git'
+        - 'file'
+        - 'vim'
       state: present
 
     
@@ -375,6 +377,10 @@
   #   args:
   #     chdir: "/opt/GsDevKit_home"
 
+
+  - name: Reboot if first time install
+    when: via_is_installed is undefined
+    ansible.builtin.reboot:
 
   #
   # Start services
