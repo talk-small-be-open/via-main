@@ -591,6 +591,7 @@
       job: "cd {{via.installationPath}}/via_base/server && cronic ./executeSmalltalk.sh {{stoneName}} \"VIAApplicationManager current runWeeklyTasks\" "
   - name: Backup cron job
     cron:
+      disabled: "{{via.backupS3Endpoint == None}}"
       name: "Backup {{stoneName}}"
       user: "{{remoteUser}}"
       minute: "0"
@@ -598,6 +599,7 @@
       job: "cd {{via.installationPath}}/via_base/server && cronic ./backup.sh {{stoneName}} {{via.backupTarget}} {{via.backupS3Endpoint}}"
   - name: Verifying backup cron job
     cron:
+      disabled: "{{via.backupS3Endpoint == None}}"
       name: "Verifying backup {{stoneName}}"
       user: "{{remoteUser}}"
       minute: "0"
@@ -633,8 +635,8 @@
       hour: "2"
       job: "cd {{via.installationPath}}/via_base/server && cronic ./delete_old_objectlog.sh {{stoneName}}"
   - name: Run integration tests
-    when: via.integrationTest is defined
     cron:
+      disabled: "{{via.integrationTest.userEmail == None}}"
       name: "Run integration tests of {{stoneName}}"
       user: "{{remoteUser}}"
       minute: "1"

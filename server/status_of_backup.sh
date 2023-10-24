@@ -7,8 +7,6 @@ if [ -f "/opt/via/.duplicity.cred" ]; then
 		source "/opt/via/.duplicity.cred"
 fi
 
-BACKEND=$1
-ENDPOINT=${2:-}
 VERBOSE=false
 
 while getopts "v" opt; do
@@ -23,6 +21,8 @@ while getopts "v" opt; do
 		esac
 done
 
+BACKEND=$1
+ENDPOINT=${2:-}
 
 # GemStone DB
 echo -e "GEMSTONE DATABASE\n================"
