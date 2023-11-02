@@ -573,6 +573,15 @@ div.taskEditor {
 								}
 						}
 
+						&.VIAGlossary {
+								div.entries {
+										span.entryTitle {
+												display: inline-block;
+												margin-right: 0.5em;
+										}
+								}
+						}
+
 						
 
 						// &.VIAPillarSnippet {
@@ -906,6 +915,27 @@ div.listBatcher {
 		// 				padding: 0 0.5em;
 		// 		}
 		// }
+}
+
+div.VIAGlossaryEditor {
+		table.glossarEntries {
+				width: 100%;
+				td {
+						vertical-align: top;
+				}
+		}
+
+		div.largeTextareaContainer {
+				max-height: 60em;
+				overflow: auto;
+				overscroll-behavior: none;
+				margin: 0.5em 0;
+		}
+		
+		textarea.newEntriesInput {
+				min-height: 10em;
+				background-color: #f9f9f9;
+		}
 }
 
 
