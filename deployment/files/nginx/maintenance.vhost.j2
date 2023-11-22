@@ -6,6 +6,10 @@ server {
 
     root {{via.installationPath}}/via_base/web_root;
 
+    location ~* \.(jpg|svg|css|png)$  {
+        try_files $uri =404;
+    }
+
     location / {
         return 503;
     }
