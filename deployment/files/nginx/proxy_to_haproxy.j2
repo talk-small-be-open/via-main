@@ -5,6 +5,10 @@ add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0, proxy-
 # Allow connections from Browser to websocket
 add_header Content-Security-Policy "connect-src https: 'self' wss://$host;";
 
+# Tell the browser to allow autoplay (does it have any effect?)
+add_header Permissions-Policy "autoplay=(self)";
+
+
 proxy_pass http://haproxy_upstream;
 
 # For upstream keepalive to work properly
