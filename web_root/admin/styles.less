@@ -660,27 +660,48 @@ div.taskEditor {
 div.pillarInput {
 
 		// max-width: 72em;
+		margin-bottom: 10px;
+		position: relative;
 		
 		textarea.pillar {
 				// width: 600px;
+				padding-bottom: 2em;
+				resize: none;
 				margin-bottom: 0;
 
+				// For pillar with long lines better readability
 				&.noWrap {
 						white-space: pre;
 						overflow-x: scroll;
+						margin-bottom: 20px;
 				}
 		}
 
 		div.pillarToolbar {
-				text-align: right;
+//				text-align: right;
 				.muted();
 				font-size: 80%;
+				padding: 2px 4px;
+				//				background-color: #f3f3f3;
+				position: absolute;
+				//top: -20px;
+				bottom: 0;
+				width: 100%;
+				box-sizing: border-box;
+				border-top: 1px solid #eee;
 				a.pillarPreviewLink {
 						// position: absolute;
 						// right: 0;
 						cursor: pointer;
 				}
 
+				span.pillarSyntaxIndicator {
+//						.badge();
+						color: darkgreen;
+						text-transform: uppercase;
+						margin-right: 5px;
+//						font-size: 90%;
+				}
 		}
 }
 

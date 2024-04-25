@@ -122,12 +122,14 @@
   # User config
   #
   
-  - name: Copy SSH config
-    copy:
-      src: files/ssh/config
-      dest: "/home/{{remoteUser}}/.ssh/config"
-      owner: "{{remoteUser}}"
-      group: "{{remoteUser}}"
+# This is not nice, since it could overwrite the server-specific stuff. Hm, why do we need that in Ansible, anyway?
+# If needed, put it in site-specific ansible
+  # - name: Copy SSH config
+  #   copy:
+  #     src: files/ssh/config
+  #     dest: "/home/{{remoteUser}}/.ssh/config"
+  #     owner: "{{remoteUser}}"
+  #     group: "{{remoteUser}}"
 
   - name: Set up multiple authorized keys
     authorized_key:
@@ -274,7 +276,8 @@
     
   # PHP (NGINX Upload helper)
   - name: PHP for nginx
-    apt: pkg=php-fpm
+    apt:
+      name: php-fpm=2:8.1*
   - name: via php.ini settings
     copy:
       src: files/nginx/php.ini

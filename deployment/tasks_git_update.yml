@@ -16,7 +16,7 @@
     accept_hostkey: yes
     update: yes
     force: no
-
+    
 - name: Sticky folder permissions for webserver (www-data)
   file:
     path: "{{item}}"
