@@ -696,14 +696,18 @@ div.pillarInput {
 				}
 
 				span.pillarSyntaxIndicator {
-//						.badge();
-						color: darkgreen;
-						text-transform: uppercase;
 						margin-right: 5px;
-//						font-size: 90%;
 				}
 		}
 }
+
+// Can occur also outside of a text input
+span.pillarSyntaxIndicator {
+		color: darkgreen;
+		text-transform: uppercase;
+		margin: 0 3px;
+}
+
 
 div#pillarPreviewDialog {
 		transition: all 0.25s ease-out;
