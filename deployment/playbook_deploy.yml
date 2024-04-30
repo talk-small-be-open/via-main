@@ -123,10 +123,10 @@
 
 # ??? MAYBE ensure the VIA base project is unlocked: todeIt project unlock Via
 
-  # - name: Update VIA base project (pull)
-  #   ignore_errors: yes # Strange: Some of the installations have a git-project, some not and they fail.
-  #   become_user: "{{remoteUser}}"
-  #   shell: "todeIt {{stoneName}} project pull Via"
+  - name: Update VIA base project (pull)
+    ignore_errors: yes # Some of the installations have a real local git-project (pull allowed), some have autocached github shadows (pull fails).
+    become_user: "{{remoteUser}}"
+    shell: "todeIt {{stoneName}} project pull Via"
 
   - name: Update VIA site project information (pull)
     become_user: "{{remoteUser}}"
