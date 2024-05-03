@@ -33,14 +33,21 @@ checkCookiesAllowed();
 //
 function saveScroll(id) {
 	if (isCookiesNotAllowed()) { return }
+
+	const cookieName = "page_scroll_" + id;
 	
 	// Should not use jQuery here (?)
 	//var y = $(document).scrollTop();
-	var y = window.pageYOffset || document.documentElement.scrollTop;
+	const y = window.pageYOffset || document.documentElement.scrollTop;
 
+	const yInCookie = Cookies.get(cookieName);
+
+	// Dont write cookie if value not changed
+	if (y == yInCookie) { return }
+	
 	// Short time to live, else they would cumulate to many in the browser
 	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
-	Cookies.set("page_scroll_" + id, y, { expires: inFifteenMinutes, sameSite: "Strict", secure: true });
+	Cookies.set(cookieName, y, { expires: inFifteenMinutes, sameSite: "Strict", secure: true });
 }
 
 var isLoadScrollDone = false;
