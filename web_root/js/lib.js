@@ -32,22 +32,17 @@ checkCookiesAllowed();
 // Scroll position restoring
 //
 function saveScroll(id) {
-	if (isCookiesNotAllowed()) { return }
 
-	const cookieName = "page_scroll_" + id;
+	const keyName = "page_scroll_" + id;
 	
-	// Should not use jQuery here (?)
-	//var y = $(document).scrollTop();
 	const y = window.pageYOffset || document.documentElement.scrollTop;
 
-	const yInCookie = Cookies.get(cookieName);
+	const yInStorage = sessionStorage.getItem(keyName);
 
-	// Dont write cookie if value not changed
-	if (y == yInCookie) { return }
+	// Dont write if value not changed
+	if (y == yInStorage) { return }
 	
-	// Short time to live, else they would cumulate to many in the browser
-	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
-	Cookies.set(cookieName, y, { expires: inFifteenMinutes, sameSite: "Strict", secure: true });
+	sessionStorage.setItem(keyName, y);
 }
 
 var isLoadScrollDone = false;
@@ -55,14 +50,9 @@ function loadScroll(id) {
 	// Prevent multi-restore from many components
 	if (isLoadScrollDone) { return }
 
-	if (isCookiesNotAllowed()) { return }
-
-	var y = Cookies.get("page_scroll_" + id);
+	var y = sessionStorage.getItem("page_scroll_" + id);
 	if (!y) {return}
 
-	// Should not use jQuery here (?)
-	//$(document).scrollTop(y);
-	//	document.documentElement.scrollTop = document.body.scrollTop = y;
 	window.scroll({behavior: 'auto', top: y});
 	
 	isLoadScrollDone = true;
