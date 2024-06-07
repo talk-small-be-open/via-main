@@ -248,3 +248,14 @@ function preventBackButton(thenCallback) {
 function normalizeString(inString) {
 	return inString.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 }
+
+// Does a deferring of JS code, after the DOM has been loaded. Similar to the HTML builtin defer, but for code pieces
+function scriptDefer(code) {
+	
+	if (document.readyState!="loading") {
+		code();
+	}	else {
+		document.addEventListener("DOMContentLoaded", code, {once: true});
+	}
+	
+}
