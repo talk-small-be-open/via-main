@@ -206,29 +206,66 @@ function debounce(func, thresholdMs, execAsap) {
   };
 }
 
+function checkSessionTimetolive(checkaliveUrl, sessionDuration, predelaySec) {
 
-function handleSessionCheck(responseData) {
-	var msg;
+	// OPTIMIZE: Dont use jQuery
 	
-	switch (responseData) {
-	case 'OK':
-		// alert('Session OK');
-	  break;
-	case 'expired':
-		msg = $("#expiredSessionMessage").text();
-		alert(msg);
-		location.reload(true);
-		break;
-	case 'nearlyExpired':
-		msg = $("#nearlyExpiredSessionMessage").text();
-		alert(msg);
-		// OPTIMIZE: Send keepalive here
-		break;
-	default:
-		// nothing
+	// responseData is string with the number of seconds to go
+	const handler = (responseData) => {
+		var msg;
+
+		const newSecondsToGo = Number(responseData);
+
+		if (newSecondsToGo == NaN) return;
+
+		// expired
+		if (newSecondsToGo <= 0) {
+			msg = $("#expiredSessionMessage").text();
+			alert(msg);
+			location.reload(true);
+			return
+		}
+
+		if (newSecondsToGo <= predelaySec) {
+			msg = $("#nearlyExpiredSessionMessage").text();
+
+			// check again, after potentially the session is expired
+			// checkTimetoliveSession(checkaliveUrl, newSecondsToGo + 10);
+			startCheckSessionTimer(newSecondsToGo + 10);
+
+			alert(msg);
+			return
+		}
+
+		// else, everything OK, nothing to do but reschedule a bit earlier than expiration
+		const secondsTilNextCheck = newSecondsToGo - ( predelaySec - 30 );
+		
+		startCheckSessionTimer( secondsTilNextCheck );
+//		checkTimetoliveSession(checkaliveUrl, secondsToGo, predelaySec);
+	
 	}
+
+	
+	
+	const startCheckSessionTimer = (inSeconds) => {
+
+		console.log('Session check in sec: ' + inSeconds );
+		
+		// Wait until almost the session will expire, before start again
+		setTimeout(() => {
+			$.ajax(checkaliveUrl, {
+				success: (data, status) => { handler(data) },
+				error: () => { } // do nothing
+			});
+		}, inSeconds * 1000 );
+	}
+
+	// First call to timer
+	startCheckSessionTimer( sessionDuration - ( predelaySec - 30 ) );
 	
 }
+
+
 
 function preventBackButton(thenCallback) {
 	// Hacky method to prevent back button
