@@ -206,12 +206,45 @@ function debounce(func, thresholdMs, execAsap) {
   };
 }
 
-function checkSessionTimetolive(checkaliveUrl, sessionDuration, predelaySec) {
+
+
+// ============== Session checker/keepalive
+
+class SessionChecker {
 
 	// OPTIMIZE: Dont use jQuery
+
+	timer;
+	predelaySec;
+	checkaliveUrl;
+
+	// singleton
+	constructor() {
+    if (SessionChecker._instance) {
+      return SessionChecker._instance
+    }
+    SessionChecker._instance = this;
+  }
+	
+	startCheckalive(checkaliveUrl, sessionDuration, predelaySec) {
+
+		this.predelaySec = predelaySec;
+		this.checkaliveUrl = checkaliveUrl;
+		
+		// First call to timer
+		this.startCheckSessionTimer( sessionDuration - ( predelaySec - 30 ) );
+
+		// Check session immediately after becoming visible
+//		document.addEventListener('visibilitychange', ()=>{ this.visibilityHandler() });
+
+		
+	}
+
+	// visibilityHandler() {		
+	// }
 	
 	// responseData is string with the number of seconds to go
-	const handler = (responseData) => {
+	checkaliveHandler(responseData) {
 		var msg;
 
 		const newSecondsToGo = Number(responseData);
@@ -226,7 +259,7 @@ function checkSessionTimetolive(checkaliveUrl, sessionDuration, predelaySec) {
 			return
 		}
 
-		if (newSecondsToGo <= predelaySec) {
+		if (newSecondsToGo <= this.predelaySec) {
 			msg = $("#nearlyExpiredSessionMessage").text();
 
 			// check again, after potentially the session is expired
@@ -238,32 +271,37 @@ function checkSessionTimetolive(checkaliveUrl, sessionDuration, predelaySec) {
 		}
 
 		// else, everything OK, nothing to do but reschedule a bit earlier than expiration
-		const secondsTilNextCheck = newSecondsToGo - ( predelaySec - 30 );
+		const secondsTilNextCheck = newSecondsToGo - ( this.predelaySec - 30 );
 		
-		startCheckSessionTimer( secondsTilNextCheck );
+		this.startCheckSessionTimer( secondsTilNextCheck );
 //		checkTimetoliveSession(checkaliveUrl, secondsToGo, predelaySec);
 	
 	}
 
 	
 	
-	const startCheckSessionTimer = (inSeconds) => {
+	startCheckSessionTimer(inSeconds) {
 
 		console.log('Session check in sec: ' + inSeconds );
+
+		if (this.timer) clearTimeout(this.timer);
 		
 		// Wait until almost the session will expire, before start again
-		setTimeout(() => {
-			$.ajax(checkaliveUrl, {
-				success: (data, status) => { handler(data) },
+		this.timer = setTimeout(() => {
+
+			$.ajax(this.checkaliveUrl, {
+				success: (data, status) => { this.checkaliveHandler(data) },
 				error: () => { } // do nothing
 			});
+			this.timer = null;
+			
 		}, inSeconds * 1000 );
 	}
-
-	// First call to timer
-	startCheckSessionTimer( sessionDuration - ( predelaySec - 30 ) );
-	
 }
+
+
+
+
 
 
 
