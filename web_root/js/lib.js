@@ -31,11 +31,11 @@ checkCookiesAllowed();
 //
 // Scroll position restoring
 //
-function saveScroll(id) {
+function saveScroll(id, givenY = null) {
 
 	const keyName = "page_scroll_" + id;
 	
-	const y = window.pageYOffset || document.documentElement.scrollTop;
+	const y = givenY || window.pageYOffset || document.documentElement.scrollTop;
 
 	const yInStorage = sessionStorage.getItem(keyName);
 
@@ -56,6 +56,15 @@ function loadScroll(id) {
 	window.scroll({behavior: 'auto', top: y});
 	
 	isLoadScrollDone = true;
+
+	// Quick&dirty: Auto reset after a while, since scrolling could be loaded later from some AJAX or other commands
+	setTimeout(()=>isLoadScrollDone = false, 500);
+}
+
+// Scrolls to that position and stores it. Used maybe from some JS initialization.
+function presetScroll(id, valueY) {
+	saveScroll(id, valueY);
+	window.scroll({behavior: 'auto', top: valueY});	
 }
 
 
@@ -264,7 +273,7 @@ class SessionChecker {
 
 			// check again, after potentially the session is expired
 			// checkTimetoliveSession(checkaliveUrl, newSecondsToGo + 10);
-			startCheckSessionTimer(newSecondsToGo + 10);
+			this.startCheckSessionTimer(newSecondsToGo + 10);
 
 			alert(msg);
 			return
