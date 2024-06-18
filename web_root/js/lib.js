@@ -226,6 +226,7 @@ class SessionChecker {
 	timer;
 	predelaySec;
 	checkaliveUrl;
+	isDocumentHidden = false;
 
 	// singleton
 	constructor() {
@@ -244,13 +245,25 @@ class SessionChecker {
 		this.startCheckSessionTimer( sessionDuration - ( predelaySec - 30 ) );
 
 		// Check session immediately after becoming visible
-//		document.addEventListener('visibilitychange', ()=>{ this.visibilityHandler() });
+		document.addEventListener('visibilitychange', ()=>{ this.visibilityHandler() });
 
 		
 	}
 
-	// visibilityHandler() {		
-	// }
+	visibilityHandler() {
+
+		// made visible
+		if (document.hidden) {
+			this.stopCheckSessionTimer();
+		} else {
+			// Check immediately if WAS hidden
+			if (this.isDocumentHidden) { this.startCheckSessionTimer(2) }
+		}
+		
+		// Update state
+		this.isDocumentHidden = document.hidden;
+		
+	}
 	
 	// responseData is string with the number of seconds to go
 	checkaliveHandler(responseData) {
@@ -293,7 +306,7 @@ class SessionChecker {
 
 		console.log('Session check in sec: ' + inSeconds );
 
-		if (this.timer) clearTimeout(this.timer);
+		this.stopCheckSessionTimer();
 		
 		// Wait until almost the session will expire, before start again
 		this.timer = setTimeout(() => {
@@ -305,6 +318,10 @@ class SessionChecker {
 			this.timer = null;
 			
 		}, inSeconds * 1000 );
+	}
+
+	stopCheckSessionTimer() {
+		if (this.timer) clearTimeout(this.timer);
 	}
 }
 
