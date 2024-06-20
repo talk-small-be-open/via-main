@@ -31,16 +31,18 @@ checkCookiesAllowed();
 //
 // Scroll position restoring
 //
-function saveScroll(id) {
-	if (isCookiesNotAllowed()) { return }
-	
-	// Should not use jQuery here (?)
-	//var y = $(document).scrollTop();
-	var y = window.pageYOffset || document.documentElement.scrollTop;
+function saveScroll(id, givenY = null) {
 
-	// Short time to live, else they would cumulate to many in the browser
-	var inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
-	Cookies.set("page_scroll_" + id, y, { expires: inFifteenMinutes, sameSite: "Strict", secure: true });
+	const keyName = "page_scroll_" + id;
+	
+	const y = givenY || window.pageYOffset || document.documentElement.scrollTop;
+
+	const yInStorage = sessionStorage.getItem(keyName);
+
+	// Dont write if value not changed
+	if (y == yInStorage) { return }
+	
+	sessionStorage.setItem(keyName, y);
 }
 
 var isLoadScrollDone = false;
@@ -48,17 +50,21 @@ function loadScroll(id) {
 	// Prevent multi-restore from many components
 	if (isLoadScrollDone) { return }
 
-	if (isCookiesNotAllowed()) { return }
-
-	var y = Cookies.get("page_scroll_" + id);
+	var y = sessionStorage.getItem("page_scroll_" + id);
 	if (!y) {return}
 
-	// Should not use jQuery here (?)
-	//$(document).scrollTop(y);
-	//	document.documentElement.scrollTop = document.body.scrollTop = y;
 	window.scroll({behavior: 'auto', top: y});
 	
 	isLoadScrollDone = true;
+
+	// Quick&dirty: Auto reset after a while, since scrolling could be loaded later from some AJAX or other commands
+	setTimeout(()=>isLoadScrollDone = false, 500);
+}
+
+// Scrolls to that position and stores it. Used maybe from some JS initialization.
+function presetScroll(id, valueY) {
+	saveScroll(id, valueY);
+	window.scroll({behavior: 'auto', top: valueY});	
 }
 
 
@@ -210,28 +216,120 @@ function debounce(func, thresholdMs, execAsap) {
 }
 
 
-function handleSessionCheck(responseData) {
-	var msg;
+
+// ============== Session checker/keepalive
+
+class SessionChecker {
+
+	// OPTIMIZE: Dont use jQuery
+
+	timer;
+	predelaySec;
+	checkaliveUrl;
+	isDocumentHidden = false;
+
+	// singleton
+	constructor() {
+    if (SessionChecker._instance) {
+      return SessionChecker._instance
+    }
+    SessionChecker._instance = this;
+  }
 	
-	switch (responseData) {
-	case 'OK':
-		// alert('Session OK');
-	  break;
-	case 'expired':
-		msg = $("#expiredSessionMessage").text();
-		alert(msg);
-		location.reload(true);
-		break;
-	case 'nearlyExpired':
-		msg = $("#nearlyExpiredSessionMessage").text();
-		alert(msg);
-		// OPTIMIZE: Send keepalive here
-		break;
-	default:
-		// nothing
+	startCheckalive(checkaliveUrl, sessionDuration, predelaySec) {
+
+		this.predelaySec = predelaySec;
+		this.checkaliveUrl = checkaliveUrl;
+		
+		// First call to timer
+		this.startCheckSessionTimer( sessionDuration - ( predelaySec - 30 ) );
+
+		// Check session immediately after becoming visible
+		document.addEventListener('visibilitychange', ()=>{ this.visibilityHandler() });
+
+		
+	}
+
+	visibilityHandler() {
+
+		// made visible
+		if (document.hidden) {
+			this.stopCheckSessionTimer();
+		} else {
+			// Check immediately if WAS hidden
+			if (this.isDocumentHidden) { this.startCheckSessionTimer(2) }
+		}
+		
+		// Update state
+		this.isDocumentHidden = document.hidden;
+		
 	}
 	
+	// responseData is string with the number of seconds to go
+	checkaliveHandler(responseData) {
+		var msg;
+
+		const newSecondsToGo = Number(responseData);
+
+		if (newSecondsToGo == NaN) return;
+
+		// expired
+		if (newSecondsToGo <= 0) {
+			msg = $("#expiredSessionMessage").text();
+			alert(msg);
+			location.reload(true);
+			return
+		}
+
+		if (newSecondsToGo <= this.predelaySec) {
+			msg = $("#nearlyExpiredSessionMessage").text();
+
+			// check again, after potentially the session is expired
+			// checkTimetoliveSession(checkaliveUrl, newSecondsToGo + 10);
+			this.startCheckSessionTimer(newSecondsToGo + 10);
+
+			alert(msg);
+			return
+		}
+
+		// else, everything OK, nothing to do but reschedule a bit earlier than expiration
+		const secondsTilNextCheck = newSecondsToGo - ( this.predelaySec - 30 );
+		
+		this.startCheckSessionTimer( secondsTilNextCheck );
+//		checkTimetoliveSession(checkaliveUrl, secondsToGo, predelaySec);
+	
+	}
+
+	
+	
+	startCheckSessionTimer(inSeconds) {
+
+		console.log('Session check in sec: ' + inSeconds );
+
+		this.stopCheckSessionTimer();
+		
+		// Wait until almost the session will expire, before start again
+		this.timer = setTimeout(() => {
+
+			$.ajax(this.checkaliveUrl, {
+				success: (data, status) => { this.checkaliveHandler(data) },
+				error: () => { } // do nothing
+			});
+			this.timer = null;
+			
+		}, inSeconds * 1000 );
+	}
+
+	stopCheckSessionTimer() {
+		if (this.timer) clearTimeout(this.timer);
+	}
 }
+
+
+
+
+
+
 
 function preventBackButton(thenCallback) {
 	// Hacky method to prevent back button
@@ -250,4 +348,15 @@ function preventBackButton(thenCallback) {
 // removes all special accents on the characters
 function normalizeString(inString) {
 	return inString.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+}
+
+// Does a deferring of JS code, after the DOM has been loaded. Similar to the HTML builtin defer, but for code pieces
+function scriptDefer(code) {
+	
+	if (document.readyState!="loading") {
+		code();
+	}	else {
+		document.addEventListener("DOMContentLoaded", code, {once: true});
+	}
+	
 }

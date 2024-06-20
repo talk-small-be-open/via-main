@@ -41,7 +41,7 @@ server {
 		{% endfor %}
 
 
-		{% for path in ['/keepalive', '/ping'] -%}
+		{% for path in ['/keepalive', '/ping', '/webmanifest'] -%}
 		# Speedup access to some services (no auth, no bandwith)
 		location {{path}} {
 				access_log off;

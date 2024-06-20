@@ -124,7 +124,7 @@
 # ??? MAYBE ensure the VIA base project is unlocked: todeIt project unlock Via
 
   - name: Update VIA base project (pull)
-    ignore_errors: yes # Some of the installations have a real local git-project (pull allowed), some have autocached github shadows (pull fails).
+    ignore_errors: yes # Some of the installations have a full git-project (if development), some not and they will fail, but will auto-update the cached git files anyway
     become_user: "{{remoteUser}}"
     shell: "todeIt {{stoneName}} project pull Via"
 
