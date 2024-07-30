@@ -499,14 +499,32 @@ div.taskEditor {
 								max-width: 100%;
 						}
 
+						textarea {
+								width: 100%;
+								// clear: both;
+								// min-height: 80px;
+
+								&.hint {
+										width: 18em;
+								}
+						}
+
+						
 						// all levels
 						div.inputEditor {
-								select.uiStyleSelect {
-										font-size: 80%;
-										line-height: 80%;
-										height: auto;
-										padding-top: 0;
-										padding-bottom: 0;
+								div.sideTools {
+										// position: absolute;
+										// top: 2px;
+										// right: 2px;
+										float: right;
+										position: relative;
+										select.uiStyleSelect {
+												font-size: 80%;
+												line-height: 80%;
+												height: auto;
+												padding-top: 0;
+												padding-bottom: 0;
+										}
 								}
 
 								div.VIAHighlightArea {
@@ -636,14 +654,6 @@ div.taskEditor {
 						}
 
 						
-						textarea {
-								width: 100%;
-								// min-height: 80px;
-
-								&.hint {
-										width: 18em;
-								}
-						}
 
 						&.insertPlaceholder {
 								background-color: lightgreen;
@@ -676,6 +686,7 @@ div.pillarInput {
 		// max-width: 72em;
 		margin-bottom: 10px;
 		position: relative;
+		clear: both;
 		
 		textarea.pillar {
 				// width: 600px;
@@ -899,6 +910,7 @@ div.VIAInformationComponent {
 
 .pull-right{
 		float: right;
+		position: relative; // Needed to avoid some strange hiding for mouse events, behind the next element
 }
 
 div.VIAAdminSupportComponent {
