@@ -69,7 +69,7 @@ function highlightAreas_highlightFromTo(taskElement, startElement, endElement) {
 		foundSpaceIndex = after.findIndex( el => ! normalizeString($(el).text()).match(/^[a-z0-9]+$/i) );
 		if (foundSpaceIndex == -1 ) {
 			// Expand to end of text
-			foundSpaceIndex = b;
+			foundSpaceIndex = after.length;
 		}
 		b = (b + foundSpaceIndex); 
 		realEndElement = all[b];
