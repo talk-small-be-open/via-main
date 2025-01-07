@@ -397,7 +397,6 @@
   - name: install ngxblocker
     become_user: "root"
     shell:
-      warn: false
       cmd: |
         wget https://raw.githubusercontent.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/master/install-ngxblocker -O /usr/local/sbin/install-ngxblocker
         chmod +x /usr/local/sbin/install-ngxblocker
@@ -676,8 +675,8 @@
       group: "{{remoteUser}}"
 
   - name: install JMeter
+    ignore_errors: true
     shell:
-      warn: false
       cmd: |
         curl https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-5.6.3.tgz | tar -C /opt/jmeter --strip-components=1 -xz
     args:
